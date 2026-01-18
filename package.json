@@ -1,0 +1,23 @@
+{
+  "name": "taskit",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@shoelace-style/shoelace": "^2.20.1",
+    "dexie": "^4.2.1",
+    "lit": "^3.3.1",
+    "vite-plugin-singlefile": "^2.3.0"
+  },
+  "devDependencies": {
+    "sass": "^1.94.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4",
+    "vite-tsconfig-paths": "^6.0.3"
+  }
+}
