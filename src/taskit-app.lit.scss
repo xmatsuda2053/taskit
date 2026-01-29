@@ -1,6 +1,6 @@
 .container {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 320px 1fr;
   grid-template-rows: 50px 1fr 30px;
   grid-auto-columns: 1fr;
   grid-auto-rows: 1fr;
@@ -20,7 +20,7 @@
 
   .menu-area {
     grid-area: menu-area;
-    background-color: #79c9c5;
+    overflow: hidden;
   }
 
   .contents-area {
