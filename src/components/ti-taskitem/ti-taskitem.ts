@@ -7,9 +7,10 @@ import {
   HTMLTemplateResult,
 } from "lit";
 import { customElement, state, property, query } from "lit/decorators.js";
+import { classMap } from "lit/directives/class-map.js";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
-import { type Task } from "@/models/Task";
 import { db } from "@/service/TaskItDB";
+import { formatDate, getThresholdDate } from "@/service/utils";
 
 import "@shoelace-style/shoelace/dist/themes/light.css";
 import styles from "./ti-taskitem.lit.scss?inline";
@@ -28,12 +29,20 @@ export class TiTaskItem extends LitElement {
   `;
 
   /**
-   * タスオブジェクトト
+   * タスクを管理するID
    *
-   * @type {Task}
+   * @type {number}
    * @memberof TiTaskItem
    */
-  @property({ type: Object }) task?: Task;
+  @property({ type: Number }) taskId?: number;
+
+  /**
+   * 期限日
+   *
+   * @type {Date}
+   * @memberof TiTaskItem
+   */
+  @property({ type: Date }) dueDate?: Date;
 
   /**
    * ツールチップに表示するタスク名
@@ -41,7 +50,7 @@ export class TiTaskItem extends LitElement {
    * @type {string}
    * @memberof TiTaskItem
    */
-  @state() tooltipContent: string = "";
+  @state() title: string = "";
 
   /**
    * Creates an instance of TiTaskItem.
@@ -91,7 +100,7 @@ export class TiTaskItem extends LitElement {
    */
   private handleSlotChange(e: Event) {
     const slot = e.target as HTMLSlotElement;
-    this.tooltipContent = slot
+    this.title = slot
       .assignedNodes({ flatten: true })
       .map((node) => node.textContent ?? "")
       .join("")
@@ -108,10 +117,28 @@ export class TiTaskItem extends LitElement {
    * @memberof TiTaskItem
    */
   protected render(): HTMLTemplateResult {
+    const isOverdue =
+      !this.dueDate || new Date(this.dueDate) < getThresholdDate(3);
+    const classes = {
+      label: true, // 常に付与
+      overdue: isOverdue,
+    };
+
     return html`<div id="root">
-      <sl-tooltip content="${this.tooltipContent}" placement="right">
-        <div class="label">
-          <slot @slotchange=${this.handleSlotChange}></slot>
+      <sl-tooltip placement="right">
+        <div class="${classMap(classes)}">
+          <sl-icon
+            library="fillgo"
+            name="${isOverdue ? "exclamation-square-fill" : "card-text"}"
+            class="icon"
+          ></sl-icon>
+          <div class="task-title">
+            <slot @slotchange=${this.handleSlotChange}></slot>
+          </div>
+        </div>
+        <div slot="content">
+          ${this.title}<br />
+          期限日:${formatDate(this.dueDate)}
         </div>
       </sl-tooltip>
       <sl-dropdown>
@@ -136,13 +163,13 @@ export class TiTaskItem extends LitElement {
    * @memberof TiTaskItem
    */
   private async _deleteTask(): Promise<void> {
-    if (!this.task?.id) return;
-    if (!confirm(`タスク「${this.task.title}」を削除しますか？`)) {
+    if (!this.taskId) return;
+    if (!confirm(`タスク「${this.title}」を削除しますか？`)) {
       return;
     }
 
     try {
-      await db.task.delete(this.task.id);
+      await db.task.delete(this.taskId);
     } catch (error) {
       console.error("Failed to delete task:", error);
     }

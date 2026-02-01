@@ -27,6 +27,7 @@ export class TaskItDB extends Dexie {
     const newTask: Task = {
       title: title,
       status: TASK_STATUS.PENDING, // デフォルトは 'pending'
+      dueDate: undefined,
       createdAt: now,
       updatedAt: now,
     };

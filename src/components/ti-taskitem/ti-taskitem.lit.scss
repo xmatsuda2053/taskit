@@ -13,18 +13,32 @@
   .label {
     flex: 1 1 auto;
 
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+    display: flex;
+    align-items: center;
 
-    margin-top: 1px;
+    overflow: hidden;
+
     padding: 1px var(--sl-spacing-2x-small);
     padding-right: 0;
 
     &:hover {
       color: var(--sl-color-primary-800);
       text-decoration: underline;
+      font-weight: bold;
     }
+
+    .task-title {
+      margin-top: -1px;
+      margin-left: 2px;
+
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
+
+  .overdue {
+    color: var(--sl-color-danger-600);
   }
 
   .icon {

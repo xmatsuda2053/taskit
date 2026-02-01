@@ -1,6 +1,7 @@
 import check_square from "@assets/icons/check-square.svg?raw";
 import cardText from "@assets/icons/card-text.svg?raw";
 import copy from "@assets/icons/copy.svg?raw";
+import exclamationSquareFill from "@assets/icons/exclamation-square-fill.svg?raw";
 import floppy from "@assets/icons/floppy.svg?raw";
 import journalPlus from "@assets/icons/journal-plus.svg?raw";
 import plus_lg from "@assets/icons/plus-lg.svg?raw";
@@ -13,6 +14,7 @@ export const icons: Record<string, string> = {
   "check-square": check_square,
   "card-text": cardText,
   copy: copy,
+  "exclamation-square-fill": exclamationSquareFill,
   floppy: floppy,
   "journal-plus": journalPlus,
   "plus-lg": plus_lg,
