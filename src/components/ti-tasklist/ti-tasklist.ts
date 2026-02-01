@@ -116,7 +116,7 @@ export class TiTaskList extends LitElement {
    */
   disconnectedCallback() {
     super.disconnectedCallback();
-    this._subscribeToTasks();
+    this._dbSubscription?.unsubscribe();
   }
 
   /**
@@ -161,7 +161,9 @@ export class TiTaskList extends LitElement {
               this._pendingTasks,
               (task) => task.id,
               (task) => html`
-                <ti-taskitem .task=${task}>${task.title}</ti-taskitem>
+                <ti-taskitem .taskId=${task.id} .dueDate=${task.dueDate}>
+                  ${task.title}
+                </ti-taskitem>
               `,
             )}
           </div>
