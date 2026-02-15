@@ -26,13 +26,22 @@ export class TaskItDB extends Dexie {
     // Task インターフェースに基づいたオブジェクトを作成
     const newTask: Task = {
       title: title,
-      status: TASK_STATUS.PENDING, // デフォルトは 'pending'
+      status: TASK_STATUS.PENDING.code, // デフォルトは '0'（未対応）
       dueDate: undefined,
       createdAt: now,
       updatedAt: now,
     };
 
     return await this.task.add(newTask);
+  }
+
+  /**
+   * タスクをIDで取得します。
+   * @param id タスクID
+   * @returns 取得されたタスク、存在しない場合はundefined
+   */
+  async getTaskById(id: number): Promise<Task | undefined> {
+    return await this.task.get(id);
   }
 }
 export const db = new TaskItDB();

@@ -143,15 +143,15 @@ export class TiTaskList extends LitElement {
     return html` <div id="root">
       <sl-tab-group>
         <sl-tab slot="nav" panel="pending">
-          <sl-icon library="fillgo" name="square"></sl-icon>
+          <sl-icon library="taskit" name="square"></sl-icon>
           <span>未対応</span>
         </sl-tab>
         <sl-tab slot="nav" panel="progress">
-          <sl-icon library="fillgo" name="square-half"></sl-icon>
+          <sl-icon library="taskit" name="square-half"></sl-icon>
           <span>対応中</span>
         </sl-tab>
         <sl-tab slot="nav" panel="done">
-          <sl-icon library="fillgo" name="check-square"></sl-icon>
+          <sl-icon library="taskit" name="check-square"></sl-icon>
           <span>対応済</span>
         </sl-tab>
 
@@ -198,7 +198,7 @@ export class TiTaskList extends LitElement {
             id="add-task-button"
             @click=${() => this.addTaskDialog.show()}
           >
-            <sl-icon library="fillgo" name="journal-plus"></sl-icon>
+            <sl-icon library="taskit" name="journal-plus"></sl-icon>
           </sl-button>
         </sl-tooltip>
         <sl-dialog
@@ -209,14 +209,14 @@ export class TiTaskList extends LitElement {
           <div class="dialog-content">
             <sl-input placeholder="タスク名" id="new-task-title">
               <sl-icon
-                library="fillgo"
+                library="taskit"
                 name="card-text"
                 slot="prefix"
               >
             </sl-input>
           </div>
           <sl-button slot="footer" variant="primary" id="save-task-button" @click=${this._addTask}>
-            <sl-icon library="fillgo" name="floppy"></sl-icon>
+            <sl-icon library="taskit" name="floppy"></sl-icon>
           </sl-button>
         </sl-dialog>
       </div>
@@ -270,12 +270,14 @@ export class TiTaskList extends LitElement {
     this._dbSubscription = observable.subscribe({
       next: (tasks) => {
         this._pendingTasks = tasks.filter(
-          (t) => t.status === TASK_STATUS.PENDING,
+          (t) => t.status === TASK_STATUS.PENDING.code,
         );
         this._progressTasks = tasks.filter(
-          (t) => t.status === TASK_STATUS.PROGRESS,
+          (t) => t.status === TASK_STATUS.PROGRESS.code,
         );
-        this._doneTasks = tasks.filter((t) => t.status === TASK_STATUS.DONE);
+        this._doneTasks = tasks.filter(
+          (t) => t.status === TASK_STATUS.DONE.code,
+        );
       },
       error: (err) => console.error("LiveQuery Error:", err),
     });
