@@ -1,5 +1,6 @@
 import Dexie, { Table } from "dexie";
 import { TASK_STATUS, type Task } from "@/models/Task";
+import { type Member } from "@/models/Member";
 
 export class TaskItDB extends Dexie {
   task!: Table<Task>;
@@ -27,6 +28,7 @@ export class TaskItDB extends Dexie {
     const newTask: Task = {
       title: title,
       status: TASK_STATUS.PENDING.code, // デフォルトは '0'（未対応）
+      members: [],
       dueDate: undefined,
       createdAt: now,
       updatedAt: now,
@@ -42,6 +44,18 @@ export class TaskItDB extends Dexie {
    */
   async getTaskById(id: number): Promise<Task | undefined> {
     return await this.task.get(id);
+  }
+
+  /**
+   * タスクの内容を更新します。
+   *
+   * @param {Task} updatedTask
+   * @return {*}  {Promise<void>}
+   * @memberof TaskItDB
+   */
+  async updateTask(updatedTask: Task): Promise<void> {
+    updatedTask.updatedAt = new Date();
+    await this.task.put(updatedTask);
   }
 }
 export const db = new TaskItDB();

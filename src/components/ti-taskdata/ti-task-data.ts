@@ -49,6 +49,13 @@ export class TiTaskData extends LitElement {
   @state() private taskData?: Task;
 
   /**
+   * 編集モードかどうかを管理するフラグ
+   * @type {boolean}
+   * @memberof TiTaskData
+   */
+  @state() private isMemberEditMode: boolean = false;
+
+  /**
    * Creates an instance of TiTaskData.
    * @memberof TiTaskData
    */
@@ -85,12 +92,10 @@ export class TiTaskData extends LitElement {
    */
   protected async willUpdate(_changedProperties: PropertyValues) {
     super.willUpdate(_changedProperties);
-    if (_changedProperties.has("taskId")) {
-      if (this.taskId !== undefined) {
-        this.taskData = await db.getTaskById(this.taskId);
-      } else {
-        this.taskData = undefined;
-      }
+    if (this.taskId !== undefined) {
+      this.taskData = await db.getTaskById(this.taskId);
+    } else {
+      this.taskData = undefined;
     }
   }
 
@@ -163,27 +168,45 @@ export class TiTaskData extends LitElement {
           <div class="label">
             <sl-icon library="taskit" name="people"></sl-icon>
             <span>関係者</span>
-            <sl-tooltip content="Add">
-              <sl-icon-button
-                library="taskit"
-                name="plus-square"
-                @click=${this._handleClickAddMember}
-              ></sl-icon-button>
-            </sl-tooltip>
+            <div class="button-area">
+              <sl-tooltip content="Add">
+                <sl-icon-button
+                  library="taskit"
+                  name="plus-square"
+                  @click=${this._handleClickAddMember}
+                ></sl-icon-button>
+              </sl-tooltip>
+              <sl-tooltip content="Edit">
+                <sl-icon-button
+                  library="taskit"
+                  name="pencil-square"
+                  class=${this.isMemberEditMode ? "active" : ""}
+                  @click=${this._handleClickEditMember}
+                ></sl-icon-button>
+              </sl-tooltip>
+            </div>
           </div>
-          <div id="member" class="contents"></div>
+          <div id="member" class="contents">
+            <ti-members
+              .isEditMode=${this.isMemberEditMode}
+              .members=${this.taskData?.members || []}
+              @ti-change-members=${this._handleChangeMembers}
+            ></ti-members>
+          </div>
         </div>
         <!--チェックリスト-->
         <div class="input-item">
           <div class="label">
             <sl-icon library="taskit" name="ui-checks-grid"></sl-icon>
             <span>チェックリスト</span>
-            <sl-tooltip content="Add">
-              <sl-icon-button
-                library="taskit"
-                name="plus-square"
-              ></sl-icon-button>
-            </sl-tooltip>
+            <div class="button-area">
+              <sl-tooltip content="Add">
+                <sl-icon-button
+                  library="taskit"
+                  name="plus-square"
+                ></sl-icon-button>
+              </sl-tooltip>
+            </div>
           </div>
           <div class="contents"></div>
         </div>
@@ -192,12 +215,14 @@ export class TiTaskData extends LitElement {
           <div class="label">
             <sl-icon library="taskit" name="globe"></sl-icon>
             <span>関連URL</span>
-            <sl-tooltip content="Add">
-              <sl-icon-button
-                library="taskit"
-                name="plus-square"
-              ></sl-icon-button>
-            </sl-tooltip>
+            <div class="button-area">
+              <sl-tooltip content="Add">
+                <sl-icon-button
+                  library="taskit"
+                  name="plus-square"
+                ></sl-icon-button>
+              </sl-tooltip>
+            </div>
           </div>
           <div class="contents"></div>
         </div>
@@ -206,12 +231,14 @@ export class TiTaskData extends LitElement {
           <div class="label">
             <sl-icon library="taskit" name="folder"></sl-icon>
             <span>関連フォルダ</span>
-            <sl-tooltip content="Add">
-              <sl-icon-button
-                library="taskit"
-                name="plus-square"
-              ></sl-icon-button>
-            </sl-tooltip>
+            <div class="button-area">
+              <sl-tooltip content="Add">
+                <sl-icon-button
+                  library="taskit"
+                  name="plus-square"
+                ></sl-icon-button>
+              </sl-tooltip>
+            </div>
           </div>
           <div class="contents"></div>
         </div>
@@ -219,11 +246,64 @@ export class TiTaskData extends LitElement {
     </div>`;
   }
 
+  /**
+   * タスクデータを更新する。
+   *
+   * @private
+   * @return {*}
+   * @memberof TiTaskData
+   */
+  private _updateTaskData() {
+    if (!this.taskData) {
+      return;
+    }
+    db.updateTask(this.taskData);
+  }
+
+  /**
+   * 関係者の編集モードを切り替える。
+   *
+   * @private
+   * @memberof TiTaskData
+   */
+  private _handleClickEditMember() {
+    this.isMemberEditMode = !this.isMemberEditMode;
+  }
+
+  /**
+   * 関係者を追加する。
+   *
+   * @private
+   * @memberof TiTaskData
+   */
   private _handleClickAddMember() {
+    if (!this.taskData) {
+      return;
+    }
+
     if (this.taskData && !this.taskData.members) {
       this.taskData.members = [];
     }
-    this.taskData?.members.push({ div: "", name: "", tel: "" });
-    this.requestUpdate();
+
+    this.taskData.members.push({
+      div: "",
+      name: "",
+      tel: "",
+    });
+    this._updateTaskData();
+  }
+
+  /**
+   * 関係者の変更入力を検知しDBを更新する。
+   *
+   * @private
+   * @memberof TiTaskData
+   */
+  private _handleChangeMembers(e: CustomEvent) {
+    this.taskData!.members = e.detail;
+    if (this.taskData?.members.length === 0) {
+      this.isMemberEditMode = false;
+    }
+    this._updateTaskData();
   }
 }

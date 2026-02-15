@@ -66,10 +66,26 @@
           margin-right: var(--sl-spacing-2x-small);
         }
 
-        sl-icon-button {
+        .button-area {
           margin-left: auto;
+
+          sl-icon-button {
+            font-size: var(--sl-font-size-medium);
+            &::part(base) {
+              padding: 0;
+              padding-left: var(--sl-spacing-3x-small);
+            }
+
+            &.active {
+              color: var(--sl-color-primary-600);
+            }
+          }
         }
       }
+    }
+
+    .contents {
+      width: 100%;
     }
   }
 }

@@ -1,0 +1,26 @@
+#root {
+  width: 100%;
+
+  .member {
+    width: 100%;
+    display: flex;
+    gap: var(--sl-spacing-2x-small);
+    margin-bottom: var(--sl-spacing-2x-small);
+
+    .member-item {
+      flex-grow: 1;
+      min-width: 0;
+    }
+
+    .action-item {
+      sl-icon-button {
+        font-size: var(--sl-font-size-small);
+        color: var(--sl-color-danger-500);
+        &::part(base) {
+          padding-left: var(--sl-spacing-2x-small);
+          padding-right: var(--sl-spacing-2x-small);
+        }
+      }
+    }
+  }
+}
