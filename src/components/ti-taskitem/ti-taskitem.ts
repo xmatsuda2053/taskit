@@ -10,7 +10,7 @@ import { customElement, state, property, query } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import { db } from "@/service/TaskItDB";
-import { formatDate, getThresholdDate } from "@/service/utils";
+import { formatDate, getThresholdDate, emit } from "@/service/utils";
 
 import "@shoelace-style/shoelace/dist/themes/light.css";
 import styles from "./ti-taskitem.lit.scss?inline";
@@ -128,11 +128,11 @@ export class TiTaskItem extends LitElement {
       <sl-tooltip placement="right">
         <div class="${classMap(classes)}">
           <sl-icon
-            library="fillgo"
+            library="taskit"
             name="${isOverdue ? "exclamation-square-fill" : "card-text"}"
             class="icon"
           ></sl-icon>
-          <div class="task-title">
+          <div class="task-title" @click=${this._handleClickTaskItem}>
             <slot @slotchange=${this.handleSlotChange}></slot>
           </div>
         </div>
@@ -143,7 +143,7 @@ export class TiTaskItem extends LitElement {
       </sl-tooltip>
       <sl-dropdown>
         <sl-icon-button
-          library="fillgo"
+          library="taskit"
           name="chevron-right"
           class="icon"
           slot="trigger"
@@ -153,6 +153,18 @@ export class TiTaskItem extends LitElement {
         </sl-menu>
       </sl-dropdown>
     </div>`;
+  }
+
+  /**
+   * クリックされたタスクのIDを親コンポーネントに通知します。
+   *
+   * @private
+   * @memberof TiTaskItem
+   */
+  private _handleClickTaskItem() {
+    emit(this, "ti-taskitem-click", {
+      detail: { taskId: this.taskId },
+    });
   }
 
   /**
