@@ -1,28 +1,29 @@
 .scrollable {
   overflow-y: scroll;
-  //padding-right: var(--sl-spacing-x-small);
+  scroll-behavior: smooth;
 
-  // Firefox用のスクロールバースタイル
-  scrollbar-color: var(--sl-color-neutral-400) transparent;
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--sl-color-neutral-400);
+    border-radius: var(--sl-border-radius-medium);
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    background-clip: padding-box;
+
+    &:hover {
+      background-color: var(--sl-color-neutral-500);
+    }
+
+    &:active {
+      background-color: var(--sl-color-neutral-600);
+    }
+  }
 
   &::-webkit-scrollbar-track {
     background: transparent;
     border-radius: var(--sl-border-radius-medium);
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--sl-color-neutral-300);
-    border-radius: var(--sl-border-radius-medium);
-    border: 2px solid transparent;
-    background-clip: padding-box;
-    transition: background-color 0.2s ease;
-
-    &:hover {
-      background-color: var(--sl-color-neutral-400);
-    }
-
-    &:active {
-      background-color: var(--sl-color-neutral-500);
-    }
   }
 }
