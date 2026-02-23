@@ -6,12 +6,17 @@ sl-textarea {
 
 .checkbox-area {
   width: 100%;
+  border: 1px solid var(--sl-color-neutral-300);
+  border-radius: var(--sl-border-radius-medium);
+  padding: var(--sl-spacing-2x-small) 0;
 
   .checkbox-line {
-    width: 100%;
+    padding-left: var(--sl-spacing-x-small);
+    width: calc(100% - var(--sl-spacing-x-small));
 
     sl-checkbox {
       width: 100%;
+      color: var(--sl-color-neutral-600);
 
       &:hover {
         color: var(--sl-color-primary-600);
@@ -27,6 +32,13 @@ sl-textarea {
         overflow: hidden;
         white-space: nowrap;
         padding-bottom: 2px;
+      }
+
+      &.checked {
+        &::part(label) {
+          text-decoration: line-through;
+          color: var(--sl-color-neutral-500);
+        }
       }
     }
   }

@@ -1,4 +1,5 @@
 import building from "@assets/icons/building.svg?raw";
+import checkLg from "@assets/icons/check-lg.svg?raw";
 import check_square from "@assets/icons/check-square.svg?raw";
 import calendar from "@assets/icons/calendar.svg?raw";
 import cardText from "@assets/icons/card-text.svg?raw";
@@ -27,6 +28,7 @@ import chevron_right from "@assets/icons/chevron-right.svg?raw";
 
 export const icons: Record<string, string> = {
   building: building,
+  "check-lg": checkLg,
   "check-square": check_square,
   "chevron-bar-expand": chevronBarExpand,
   "chevron-bar-contract": chevronBarContract,

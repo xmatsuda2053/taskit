@@ -267,10 +267,12 @@ export class TiTaskData extends LitElement {
                   @click=${this._handleClickAddMember}
                 ></sl-icon-button>
               </sl-tooltip>
-              <sl-tooltip content="Edit">
+              <sl-tooltip
+                content="${this._getSaveOrEditTooltip(this.isMemberEditMode)}"
+              >
                 <sl-icon-button
                   library="taskit"
-                  name="pencil-square"
+                  name="${this._getSaveOrEditIconName(this.isMemberEditMode)}"
                   class=${this.isMemberEditMode ? "active" : ""}
                   @click=${this._handleClickEditMember}
                 ></sl-icon-button>
@@ -291,10 +293,12 @@ export class TiTaskData extends LitElement {
             <sl-icon library="taskit" name="ui-checks-grid"></sl-icon>
             <span>チェックリスト</span>
             <div class="button-area">
-              <sl-tooltip content="Edit">
+              <sl-tooltip
+                content="${this._getSaveOrEditTooltip(this.isCheckBoxEditMode)}"
+              >
                 <sl-icon-button
                   library="taskit"
-                  name="pencil-square"
+                  name="${this._getSaveOrEditIconName(this.isCheckBoxEditMode)}"
                   class=${this.isCheckBoxEditMode ? "active" : ""}
                   @click=${this._handleClickEditCheckBox}
                 ></sl-icon-button>
@@ -315,10 +319,12 @@ export class TiTaskData extends LitElement {
             <sl-icon library="taskit" name="globe"></sl-icon>
             <span>関連URL</span>
             <div class="button-area">
-              <sl-tooltip content="Edit">
+              <sl-tooltip
+                content="${this._getSaveOrEditTooltip(this.isUrlEditMode)}"
+              >
                 <sl-icon-button
                   library="taskit"
-                  name="pencil-square"
+                  name="${this._getSaveOrEditIconName(this.isUrlEditMode)}"
                   class=${this.isUrlEditMode ? "active" : ""}
                   @click=${this._handleClickEditUrl}
                 ></sl-icon-button>
@@ -340,10 +346,12 @@ export class TiTaskData extends LitElement {
             <sl-icon library="taskit" name="folder"></sl-icon>
             <span>関連フォルダ</span>
             <div class="button-area">
-              <sl-tooltip content="Edit">
+              <sl-tooltip
+                content="${this._getSaveOrEditTooltip(this.isFolderEditMode)}"
+              >
                 <sl-icon-button
                   library="taskit"
-                  name="pencil-square"
+                  name="${this._getSaveOrEditIconName(this.isFolderEditMode)}"
                   class=${this.isFolderEditMode ? "active" : ""}
                   @click=${this._handleClickEditFolder}
                 ></sl-icon-button>
@@ -361,6 +369,28 @@ export class TiTaskData extends LitElement {
         </div>
       </div>
     </div>`;
+  }
+
+  /**
+   * 編集モードに応じたツールチップの内容を取得する。
+   *
+   * @private
+   * @param isEditMode
+   * @returns
+   */
+  private _getSaveOrEditTooltip(isEditMode: boolean): string {
+    return isEditMode ? "Complete" : "Edit";
+  }
+
+  /**
+   * 編集モードに応じたアイコン名を取得する。
+   *
+   * @private
+   * @param isEditMode
+   * @returns
+   */
+  private _getSaveOrEditIconName(isEditMode: boolean): string {
+    return isEditMode ? "check-lg" : "pencil-square";
   }
 
   /**

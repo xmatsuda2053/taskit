@@ -7,7 +7,7 @@ sl-textarea {
 #root {
   width: 100%;
   margin-top: var(--sl-spacing-2x-small);
-  font-size: var(--sl-font-size-x-small);
+  font-size: var(--sl-font-size-small);
 
   .link-item {
     width: 100%;
@@ -15,7 +15,7 @@ sl-textarea {
     align-items: center;
     gap: var(--sl--sl-spacing-2x-small);
 
-    color: var(--sl-color-primary-600);
+    color: var(--sl-color-neutral-600);
 
     border: 1px solid var(--sl-color-neutral-300);
     border-radius: var(--sl-border-radius-medium);
@@ -26,8 +26,8 @@ sl-textarea {
 
     sl-icon {
       flex-shrink: 0;
-      color: var(--sl-color-primary-600);
-      padding-left: var(--sl-spacing-2x-small);
+      color: var(--sl-color-neutral-600);
+      padding-left: var(--sl-spacing-x-small);
     }
 
     .link-label {
@@ -35,7 +35,7 @@ sl-textarea {
       overflow: hidden;
       white-space: nowrap;
 
-      padding-left: var(--sl-spacing-2x-small);
+      padding-left: var(--sl-spacing-x-small);
     }
 
     &:hover {
