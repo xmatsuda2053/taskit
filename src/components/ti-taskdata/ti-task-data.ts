@@ -49,11 +49,20 @@ export class TiTaskData extends LitElement {
   @state() private taskData?: Task;
 
   /**
-   * 編集モードかどうかを管理するフラグ
+   * 関係者が編集モードかどうかを管理するフラグ
    * @type {boolean}
    * @memberof TiTaskData
    */
   @state() private isMemberEditMode: boolean = false;
+
+  /**
+   * チェックボックスが編集モードかどうかを管理するフラグ
+   *
+   * @private
+   * @type {boolean}
+   * @memberof TiTaskData
+   */
+  @state() private isCheckBoxEditMode: boolean = false;
 
   /**
    * Creates an instance of TiTaskData.
@@ -172,7 +181,7 @@ export class TiTaskData extends LitElement {
               <sl-tooltip content="Add">
                 <sl-icon-button
                   library="taskit"
-                  name="plus-square"
+                  name="plus-lg"
                   @click=${this._handleClickAddMember}
                 ></sl-icon-button>
               </sl-tooltip>
@@ -200,15 +209,23 @@ export class TiTaskData extends LitElement {
             <sl-icon library="taskit" name="ui-checks-grid"></sl-icon>
             <span>チェックリスト</span>
             <div class="button-area">
-              <sl-tooltip content="Add">
+              <sl-tooltip content="Edit">
                 <sl-icon-button
                   library="taskit"
-                  name="plus-square"
+                  name="pencil-square"
+                  class=${this.isCheckBoxEditMode ? "active" : ""}
+                  @click=${this._handleClickEditCheckBox}
                 ></sl-icon-button>
               </sl-tooltip>
             </div>
           </div>
-          <div class="contents"></div>
+          <div class="contents">
+            <ti-checkboxes
+              .isEditMode=${this.isCheckBoxEditMode}
+              .checkboxes=${this.taskData?.checkboxes || []}
+              @ti-change-checkboxes=${this._handleChangeCheckBoxes}
+            ></ti-checkboxes>
+          </div>
         </div>
         <!--関連URL-->
         <div class="input-item">
@@ -219,7 +236,7 @@ export class TiTaskData extends LitElement {
               <sl-tooltip content="Add">
                 <sl-icon-button
                   library="taskit"
-                  name="plus-square"
+                  name="plus-lg"
                 ></sl-icon-button>
               </sl-tooltip>
             </div>
@@ -235,7 +252,7 @@ export class TiTaskData extends LitElement {
               <sl-tooltip content="Add">
                 <sl-icon-button
                   library="taskit"
-                  name="plus-square"
+                  name="plus-lg"
                 ></sl-icon-button>
               </sl-tooltip>
             </div>
@@ -303,6 +320,32 @@ export class TiTaskData extends LitElement {
     this.taskData!.members = e.detail;
     if (this.taskData?.members.length === 0) {
       this.isMemberEditMode = false;
+    }
+    this._updateTaskData();
+  }
+
+  /**
+   * チェックボックスの編集モードを切り替える。
+   *
+   * @private
+   * @memberof TiTaskData
+   */
+  private _handleClickEditCheckBox() {
+    this.isCheckBoxEditMode = !this.isCheckBoxEditMode;
+  }
+
+  /**
+   * チェックボックスの変更入力を検知しDBを更新する。
+   *
+   * @private
+   * @memberof TiTaskData
+   * @param {CustomEvent} e - チェックボックスの変更イベント
+   * @returns {*}
+   **/
+  private _handleChangeCheckBoxes(e: CustomEvent) {
+    this.taskData!.checkboxes = e.detail;
+    if (this.taskData?.checkboxes.length === 0) {
+      this.isCheckBoxEditMode = false;
     }
     this._updateTaskData();
   }
