@@ -12,6 +12,7 @@ type TaskStatusCode = (typeof TASK_STATUS)[keyof typeof TASK_STATUS]["code"];
 export interface Task {
   id?: number;
   title: string;
+  description: string;
   status: TaskStatusCode;
   dueDate?: Date;
   members: Member[];

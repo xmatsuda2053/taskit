@@ -11,10 +11,12 @@ import { customElement, state, property, query } from "lit/decorators.js";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import { db } from "@/service/TaskItDB";
 import { TASK_STATUS, type Task } from "@/models/Task";
+import { formatDate } from "@/service/utils";
 
 import "@shoelace-style/shoelace/dist/themes/light.css";
 import sharedStyles from "@assets/styles/shared.lit.scss?inline";
 import styles from "./ti-task-data.lit.scss?inline";
+import { SlInput, SlTextarea } from "@shoelace-style/shoelace";
 
 setBasePath("/");
 @customElement("ti-task-data")
@@ -73,6 +75,33 @@ export class TiTaskData extends LitElement {
    * @memberof TiTaskData
    */
   @state() private isCheckBoxEditMode: boolean = false;
+
+  /**
+   *タイトル入力フィールドの参照を取得するためのクエリデコレーター
+   *
+   * @private
+   * @type {SlInput}
+   * @memberof TiTaskData
+   */
+  @query("#title") private titleInput!: SlInput;
+
+  /**
+   * 期限日入力フィールドの参照を取得するためのクエリデコレーター
+   *
+   * @private
+   * @type {SlInput}
+   * @memberof TiTaskData
+   */
+  @query("#due-date") private dueDateInput!: SlInput;
+
+  /**
+   * 説明入力フィールドの参照を取得するためのクエリデコレーター
+   *
+   * @private
+   * @type {SlTextarea}
+   * @memberof TiTaskData
+   * */
+  @query("#description") private descriptionInput!: SlTextarea;
 
   /**
    * Creates an instance of TiTaskData.
@@ -139,6 +168,7 @@ export class TiTaskData extends LitElement {
           placeholder="title..."
           size="small"
           value=${this.taskData?.title}
+          @sl-change=${this._handleChangeTitle}
         ></sl-input>
       </div>
       <div class="control-area">
@@ -164,7 +194,8 @@ export class TiTaskData extends LitElement {
             placeholder="due date..."
             size="small"
             type="date"
-            value=${this.taskData?.dueDate}
+            value=${formatDate(this.taskData?.dueDate, "yyyy-MM-dd")}
+            @sl-change=${this._handleChangeDueDate}
           >
           </sl-input>
         </div>
@@ -196,9 +227,11 @@ export class TiTaskData extends LitElement {
             id="description"
             size="small"
             resize="none"
-            rows=${this.isDescriptionExpandMode ? nothing : "3"}
+            rows=${this.isDescriptionExpandMode ? nothing : "2"}
             resize=${this.isDescriptionExpandMode ? "auto" : "none"}
             placeholder="description..."
+            value=${this.taskData?.description}
+            @sl-change=${this._handleChangeDescription}
           ></sl-textarea>
         </div>
         <!--関係者-->
@@ -293,13 +326,62 @@ export class TiTaskData extends LitElement {
   }
 
   /**
+   * タイトルの変更入力を検知しDBを更新する。
+   *
+   * @private
+   * @returns {*}
+   */
+  private _handleChangeTitle(): void {
+    if (!this.taskData) {
+      return;
+    }
+    this.taskData.title = this.titleInput.value;
+    this._updateTaskData();
+  }
+
+  /**
+   * 期限日の変更入力を検知しDBを更新する。
+   *
+   * @private
+   * @returns {*}
+   */
+  private _handleChangeDueDate(): void {
+    if (!this.taskData) {
+      return;
+    }
+
+    const dueDateValue = this.dueDateInput.value;
+    if (!dueDateValue) {
+      return;
+    }
+
+    this.taskData.dueDate = new Date(dueDateValue);
+    this._updateTaskData();
+  }
+
+  /**
+   * 説明の変更入力を検知しDBを更新する。
+   *
+   * @private
+   * @return {*}
+   * @memberof TiTaskData
+   * */
+  private _handleChangeDescription(): void {
+    if (!this.taskData) {
+      return;
+    }
+    this.taskData.description = this.descriptionInput.value;
+    this._updateTaskData();
+  }
+
+  /**
    * タスクデータを更新する。
    *
    * @private
    * @return {*}
    * @memberof TiTaskData
    */
-  private _updateTaskData() {
+  private _updateTaskData(): void {
     if (!this.taskData) {
       return;
     }
@@ -312,7 +394,7 @@ export class TiTaskData extends LitElement {
    * @private
    * @memberof TiTaskData
    */
-  private _handleClickEditMember() {
+  private _handleClickEditMember(): void {
     this.isMemberEditMode = !this.isMemberEditMode;
   }
 
@@ -322,7 +404,7 @@ export class TiTaskData extends LitElement {
    * @private
    * @memberof TiTaskData
    */
-  private _handleClickAddMember() {
+  private _handleClickAddMember(): void {
     if (!this.taskData) {
       return;
     }
@@ -345,7 +427,7 @@ export class TiTaskData extends LitElement {
    * @private
    * @memberof TiTaskData
    */
-  private _handleChangeMembers(e: CustomEvent) {
+  private _handleChangeMembers(e: CustomEvent): void {
     this.taskData!.members = e.detail;
     if (this.taskData?.members.length === 0) {
       this.isMemberEditMode = false;
@@ -359,7 +441,7 @@ export class TiTaskData extends LitElement {
    * @private
    * @memberof TiTaskData
    */
-  private _handleClickEditCheckBox() {
+  private _handleClickEditCheckBox(): void {
     this.isCheckBoxEditMode = !this.isCheckBoxEditMode;
   }
 
@@ -371,7 +453,7 @@ export class TiTaskData extends LitElement {
    * @param {CustomEvent} e - チェックボックスの変更イベント
    * @returns {*}
    **/
-  private _handleChangeCheckBoxes(e: CustomEvent) {
+  private _handleChangeCheckBoxes(e: CustomEvent): void {
     this.taskData!.checkboxes = e.detail;
     if (this.taskData?.checkboxes.length === 0) {
       this.isCheckBoxEditMode = false;
