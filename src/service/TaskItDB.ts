@@ -25,12 +25,14 @@ export class TaskItDB extends Dexie {
 
     // Task インターフェースに基づいたオブジェクトを作成
     const newTask: Task = {
-      title: title,
       status: TASK_STATUS.PENDING.code, // デフォルトは '0'（未対応）
+      title: title,
       description: "",
+      dueDate: undefined,
       members: [],
       checkboxes: [],
-      dueDate: undefined,
+      urls: [],
+      folders: [],
       createdAt: now,
       updatedAt: now,
     };

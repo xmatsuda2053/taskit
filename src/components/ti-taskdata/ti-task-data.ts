@@ -77,6 +77,24 @@ export class TiTaskData extends LitElement {
   @state() private isCheckBoxEditMode: boolean = false;
 
   /**
+   * URLが編集モードかどうかを管理するフラグ
+   *
+   * @private
+   * @type {boolean}
+   * @memberof TiTaskData
+   */
+  @state() private isUrlEditMode: boolean = false;
+
+  /**
+   * フォルダが編集モードかどうかを管理するフラグ
+   *
+   * @private
+   * @type {boolean}
+   * @memberof TiTaskData
+   */
+  @state() private isFolderEditMode: boolean = false;
+
+  /**
    *タイトル入力フィールドの参照を取得するためのクエリデコレーター
    *
    * @private
@@ -140,10 +158,12 @@ export class TiTaskData extends LitElement {
    */
   protected async willUpdate(_changedProperties: PropertyValues) {
     super.willUpdate(_changedProperties);
-    if (this.taskId !== undefined) {
-      this.taskData = await db.getTaskById(this.taskId);
-    } else {
-      this.taskData = undefined;
+    if (_changedProperties.has("taskId")) {
+      if (this.taskId !== undefined) {
+        this.taskData = await db.getTaskById(this.taskId);
+      } else {
+        this.taskData = undefined;
+      }
     }
   }
 
@@ -295,15 +315,24 @@ export class TiTaskData extends LitElement {
             <sl-icon library="taskit" name="globe"></sl-icon>
             <span>関連URL</span>
             <div class="button-area">
-              <sl-tooltip content="Add">
+              <sl-tooltip content="Edit">
                 <sl-icon-button
                   library="taskit"
-                  name="plus-lg"
+                  name="pencil-square"
+                  class=${this.isUrlEditMode ? "active" : ""}
+                  @click=${this._handleClickEditUrl}
                 ></sl-icon-button>
               </sl-tooltip>
             </div>
           </div>
-          <div class="contents"></div>
+          <div class="contents">
+            <ti-link
+              .isEditMode=${this.isUrlEditMode}
+              .links=${this.taskData?.urls ?? []}
+              @ti-change-links=${this._handleChangeUrl}
+            >
+            </ti-link>
+          </div>
         </div>
         <!--関連フォルダ-->
         <div class="input-item">
@@ -311,15 +340,24 @@ export class TiTaskData extends LitElement {
             <sl-icon library="taskit" name="folder"></sl-icon>
             <span>関連フォルダ</span>
             <div class="button-area">
-              <sl-tooltip content="Add">
+              <sl-tooltip content="Edit">
                 <sl-icon-button
                   library="taskit"
-                  name="plus-lg"
+                  name="pencil-square"
+                  class=${this.isFolderEditMode ? "active" : ""}
+                  @click=${this._handleClickEditFolder}
                 ></sl-icon-button>
               </sl-tooltip>
             </div>
           </div>
-          <div class="contents"></div>
+          <div class="contents">
+            <ti-link
+              .isEditMode=${this.isFolderEditMode}
+              .links=${this.taskData?.folders ?? []}
+              @ti-change-links=${this._handleChangeFolder}
+            >
+            </ti-link>
+          </div>
         </div>
       </div>
     </div>`;
@@ -381,11 +419,12 @@ export class TiTaskData extends LitElement {
    * @return {*}
    * @memberof TiTaskData
    */
-  private _updateTaskData(): void {
+  private async _updateTaskData(): Promise<void> {
     if (!this.taskData) {
       return;
     }
     db.updateTask(this.taskData);
+    this.taskData = await db.getTaskById(this.taskData.id!);
   }
 
   /**
@@ -457,6 +496,58 @@ export class TiTaskData extends LitElement {
     this.taskData!.checkboxes = e.detail;
     if (this.taskData?.checkboxes.length === 0) {
       this.isCheckBoxEditMode = false;
+    }
+    this._updateTaskData();
+  }
+
+  /**
+   * URLの編集モードを切り替える。
+   *
+   * @private
+   * @memberof TiTaskData
+   * @returns {*}
+   */
+  private _handleClickEditUrl(): void {
+    this.isUrlEditMode = !this.isUrlEditMode;
+  }
+
+  /**
+   * URLの変更入力を検知しDBを更新する。
+   * @param e
+   * @private
+   * @memberof TiTaskData
+   * @return {*}
+   */
+  private _handleChangeUrl(e: CustomEvent): void {
+    this.taskData!.urls = e.detail;
+    if (this.taskData?.urls.length === 0) {
+      this.isUrlEditMode = false;
+    }
+    this._updateTaskData();
+  }
+
+  /**
+   * フォルダの編集モードを切り替える。
+   *
+   * @private
+   * @memberof TiTaskData
+   * @returns {*}
+   */
+  private _handleClickEditFolder(): void {
+    this.isFolderEditMode = !this.isFolderEditMode;
+  }
+
+  /**
+   * フォルダの変更入力を検知しDBを更新する。
+   * @param e
+   * @private
+   * @memberof TiTaskData
+   * @return {*}
+   */
+  private _handleChangeFolder(e: CustomEvent): void {
+    this.taskData!.folders = e.detail;
+    if (this.taskData?.folders.length === 0) {
+      this.isFolderEditMode = false;
     }
     this._updateTaskData();
   }
