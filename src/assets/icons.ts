@@ -3,6 +3,8 @@ import check_square from "@assets/icons/check-square.svg?raw";
 import calendar from "@assets/icons/calendar.svg?raw";
 import cardText from "@assets/icons/card-text.svg?raw";
 import chatLeftText from "@assets/icons/chat-left-text.svg?raw";
+import chevronBarExpand from "@assets/icons/chevron-bar-expand.svg?raw";
+import chevronBarContract from "@assets/icons/chevron-bar-contract.svg?raw";
 import copy from "@assets/icons/copy.svg?raw";
 import dashCircleFill from "@assets/icons/dash-circle-fill.svg?raw";
 import exclamationSquareFill from "@assets/icons/exclamation-square-fill.svg?raw";
@@ -26,6 +28,8 @@ import chevron_right from "@assets/icons/chevron-right.svg?raw";
 export const icons: Record<string, string> = {
   building: building,
   "check-square": check_square,
+  "chevron-bar-expand": chevronBarExpand,
+  "chevron-bar-contract": chevronBarContract,
   calendar: calendar,
   "card-text": cardText,
   "chat-left-text": chatLeftText,
