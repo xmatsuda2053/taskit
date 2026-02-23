@@ -1,0 +1,34 @@
+sl-textarea {
+  &::part(textarea) {
+    font-family: monospace;
+  }
+}
+
+.checkbox-area {
+  width: 100%;
+
+  .checkbox-line {
+    width: 100%;
+
+    sl-checkbox {
+      width: 100%;
+      padding-left: 0 var(--sl-spacing-2x-small);
+
+      &:hover {
+        color: var(--sl-color-primary-600);
+      }
+
+      &::part(base) {
+        width: 100%;
+      }
+
+      &::part(label) {
+        display: block;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        padding-bottom: 2px;
+      }
+    }
+  }
+}

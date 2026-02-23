@@ -1,4 +1,5 @@
 import { Member } from "./Member";
+import { CB } from "./CB";
 
 export const TASK_STATUS = {
   PENDING: { code: "0", label: "未対応" },
@@ -14,6 +15,7 @@ export interface Task {
   status: TaskStatusCode;
   dueDate?: Date;
   members: Member[];
+  checkboxes: CB[];
   createdAt: Date;
   updatedAt: Date;
 }

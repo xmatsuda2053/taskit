@@ -1,6 +1,5 @@
 import Dexie, { Table } from "dexie";
 import { TASK_STATUS, type Task } from "@/models/Task";
-import { type Member } from "@/models/Member";
 
 export class TaskItDB extends Dexie {
   task!: Table<Task>;
@@ -29,6 +28,7 @@ export class TaskItDB extends Dexie {
       title: title,
       status: TASK_STATUS.PENDING.code, // デフォルトは '0'（未対応）
       members: [],
+      checkboxes: [],
       dueDate: undefined,
       createdAt: now,
       updatedAt: now,
