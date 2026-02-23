@@ -264,6 +264,7 @@ export class TiTaskData extends LitElement {
                 <sl-icon-button
                   library="taskit"
                   name="plus-lg"
+                  ?disabled=${!this.isMemberEditMode}
                   @click=${this._handleClickAddMember}
                 ></sl-icon-button>
               </sl-tooltip>
