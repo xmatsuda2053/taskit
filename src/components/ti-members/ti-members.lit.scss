@@ -16,6 +16,7 @@
       sl-icon-button {
         font-size: var(--sl-font-size-small);
         color: var(--sl-color-danger-500);
+
         &::part(base) {
           padding-left: var(--sl-spacing-2x-small);
           padding-right: var(--sl-spacing-2x-small);
