@@ -1,3 +1,5 @@
+import type { SlAlert } from "@shoelace-style/shoelace";
+
 /**
  * 日付オブジェクトを指定されたフォーマットの文字列に変換します。
  * * 使用可能なトークン: yyyy, MM, dd, HH, mm, ss
@@ -61,4 +63,54 @@ export function emit(el: HTMLElement, name: string, options?: CustomEventInit) {
 
   el.dispatchEvent(event);
   return event;
+}
+
+/**
+ * トースト通知を表示するためのベースとなる共通処理です。
+ *
+ * @param {string} variant 種類 ("success" | "danger" | "primary" など)
+ * @param {string} iconName 表示するアイコンの名前
+ * @param {string} title タイトル
+ * @param {string} message メッセージ内容
+ */
+function showToast(
+  variant: string,
+  iconName: string,
+  title: string,
+  message: string,
+) {
+  const alert = Object.assign(document.createElement("sl-alert"), {
+    variant: variant,
+    duration: 1500,
+    closable: true,
+    innerHTML: `
+        <sl-icon slot="icon" library="fillgo" name="${iconName}"></sl-icon>
+        <strong>${title}</strong><br />
+        ${message}
+      `,
+  });
+  document.body.append(alert);
+  (alert as SlAlert).toast();
+}
+
+/**
+ * 処理成功時のトーストを表示します。
+ *
+ * @export
+ * @param {string} innerTitleText タイトル
+ * @param {string} innerHtmlText メッセージ内容
+ */
+export function toastSuccess(innerTitleText: string, innerHtmlText: string) {
+  showToast("success", "check2-circle", innerTitleText, innerHtmlText);
+}
+
+/**
+ * 処理失敗時のトーストを表示します。
+ *
+ * @export
+ * @param {string} innerTitleText タイトル
+ * @param {string} innerHtmlText メッセージ内容
+ */
+export function toastDanger(innerTitleText: string, innerHtmlText: string) {
+  showToast("danger", "exclamation-octagon", innerTitleText, innerHtmlText);
 }
