@@ -1,6 +1,7 @@
 import {
   LitElement,
   html,
+  nothing,
   css,
   unsafeCSS,
   PropertyValues,
@@ -47,6 +48,15 @@ export class TiTaskData extends LitElement {
    * @memberof TiTaskData
    */
   @state() private taskData?: Task;
+
+  /**
+   * 説明欄が拡大表示モード化同化を管理するフラグ
+   *
+   * @private
+   * @type {boolean}
+   * @memberof TiTaskData
+   */
+  @state() private isDescriptionExpandMode: boolean = false;
 
   /**
    * 関係者が編集モードかどうかを管理するフラグ
@@ -163,12 +173,31 @@ export class TiTaskData extends LitElement {
           <div class="label">
             <sl-icon library="taskit" name="chat-left-text"></sl-icon>
             <span>説明</span>
+            <div class="button-area">
+              <sl-tooltip
+                content="${this.isDescriptionExpandMode
+                  ? "Contract"
+                  : "Expand"}"
+              >
+                <sl-icon-button
+                  library="taskit"
+                  name="${this.isDescriptionExpandMode
+                    ? "chevron-bar-contract"
+                    : "chevron-bar-expand"}"
+                  @click=${() => {
+                    this.isDescriptionExpandMode =
+                      !this.isDescriptionExpandMode;
+                  }}
+                ></sl-icon-button>
+              </sl-tooltip>
+            </div>
           </div>
           <sl-textarea
             id="description"
             size="small"
             resize="none"
-            rows="5"
+            rows=${this.isDescriptionExpandMode ? nothing : "3"}
+            resize=${this.isDescriptionExpandMode ? "auto" : "none"}
             placeholder="description..."
           ></sl-textarea>
         </div>
