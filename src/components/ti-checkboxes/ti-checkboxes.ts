@@ -147,6 +147,7 @@ export class TiCheckboxes extends LitElement {
             <sl-checkbox
               size="small"
               ?checked=${cb.isChecked}
+              class=${cb.isChecked ? "checked" : ""}
               @sl-change=${(e: Event) => this._handleChangeChecked(e, index)}
             >
               ${cb.label}
