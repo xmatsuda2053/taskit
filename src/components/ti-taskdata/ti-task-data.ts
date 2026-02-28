@@ -7,7 +7,13 @@ import {
   PropertyValues,
   HTMLTemplateResult,
 } from "lit";
-import { customElement, state, property, query } from "lit/decorators.js";
+import {
+  customElement,
+  state,
+  property,
+  query,
+  queryAll,
+} from "lit/decorators.js";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import { db } from "@/service/TaskItDB";
 import { TASK_STATUS, type Task } from "@/models/Task";
@@ -17,6 +23,7 @@ import "@shoelace-style/shoelace/dist/themes/light.css";
 import sharedStyles from "@assets/styles/shared.lit.scss?inline";
 import styles from "./ti-task-data.lit.scss?inline";
 import { SlInput, SlTextarea } from "@shoelace-style/shoelace";
+import { TiCheckboxes } from "../ti-checkboxes/ti-checkboxes";
 
 setBasePath("/");
 @customElement("ti-task-data")
@@ -111,6 +118,15 @@ export class TiTaskData extends LitElement {
    * @memberof TiTaskData
    * */
   @query("#description") private descriptionInput!: SlTextarea;
+
+  /**
+   * チェックリスト要素
+   *
+   * @private
+   * @type {TiCheckboxes[]}
+   * @memberof TiTaskData
+   */
+  @queryAll("ti-checkboxes") private tiCheckboxes!: TiCheckboxes[];
 
   /**
    * Creates an instance of TiTaskData.
@@ -284,32 +300,24 @@ export class TiTaskData extends LitElement {
           <sl-tab-panel name="checklist">
             <div class="panel-contents scrollable">
               <div class="input-item">
-                <div class="label">
-                  <sl-icon library="taskit" name="ui-checks-grid"></sl-icon>
-                  <span>リスト一覧</span>
-                  <div class="button-area">
-                    <sl-tooltip
-                      content="${this._getSaveOrEditTooltip(
-                        this.isCheckBoxEditMode,
-                      )}"
-                    >
-                      <sl-icon-button
-                        library="taskit"
-                        name="${this._getSaveOrEditIconName(
-                          this.isCheckBoxEditMode,
-                        )}"
-                        class=${this.isCheckBoxEditMode ? "active" : ""}
-                        @click=${this._handleClickEditCheckBox}
-                      ></sl-icon-button>
-                    </sl-tooltip>
-                  </div>
-                </div>
+                <ti-input-label
+                  .label=${"リスト一覧"}
+                  .icon=${"ui-checks-grid"}
+                  .editable=${true}
+                  .addable=${true}
+                  @ti-edit=${this._handleClickCheckListEdit}
+                  @ti-add=${this._addChecklist}
+                ></ti-input-label>
                 <div class="contents">
-                  <ti-checkboxes
-                    .isEditMode=${this.isCheckBoxEditMode}
-                    .checkboxes=${this.taskData?.checkboxes || []}
-                    @ti-change-checkboxes=${this._handleChangeCheckBoxes}
-                  ></ti-checkboxes>
+                  ${this.taskData?.checklist.map((c, index) => {
+                    return html`<ti-checkboxes
+                      .label=${c.label}
+                      .checkboxes=${c.checkboxes}
+                      .isEditMode=${this.isCheckBoxEditMode}
+                      @ti-change-checkboxes=${(e: CustomEvent) =>
+                        this._saveCheckBoxes(e, index)}
+                    ></ti-checkboxes>`;
+                  })}
                 </div>
               </div>
             </div>
@@ -547,13 +555,59 @@ export class TiTaskData extends LitElement {
   }
 
   /**
-   * チェックボックスの編集モードを切り替える。
+   * チェックリストの編集モードを切り替える。
+   * 編集モード終了時(`e.detail` が false)には、すべてのチェックボックスコンポーネントから
+   * 編集データを取得し、タスクデータのチェックリストを更新してデータベースに保存する。
    *
    * @private
+   * @param {CustomEvent<boolean>} e - 編集モードの状態（true: 編集中, false: 編集完了）を含むカスタムイベント
    * @memberof TiTaskData
    */
-  private _handleClickEditCheckBox(): void {
-    this.isCheckBoxEditMode = !this.isCheckBoxEditMode;
+  private _handleClickCheckListEdit(e: CustomEvent): void {
+    if (!e.detail) {
+      // 編集モードを終了するフラグがfalseで飛んできたタイミングで、すべての ti-checkboxes から値を取り出して保存
+      if (this.tiCheckboxes && this.taskData) {
+        const allCheckboxesData = Array.from(this.tiCheckboxes)
+          .map((c: any) => {
+            return typeof c.getEditorData === "function"
+              ? c.getEditorData()
+              : null;
+          })
+          .filter((data) => data !== null) as any[];
+
+        this.taskData.checklist = allCheckboxesData;
+        this._updateTaskData();
+      }
+    }
+    this.isCheckBoxEditMode = e.detail;
+  }
+
+  /**
+   * タスクデータに新しいチェックリスト項目を追加します。
+   * checklist プロパティが存在しない場合は初期化を行い、
+   * 空のラベルとチェックボックス配列を持つ新しいオブジェクトを末尾に挿入します。
+   * 追加後は _updateTaskData() を呼び出して状態を更新します。
+   *
+   * @private
+   * @returns {void}
+   * @memberof TiInputLabel
+   */
+  private _addChecklist(): void {
+    if (!this.taskData) {
+      return;
+    }
+
+    // checklist が未定義の場合は空配列で初期化
+    if (this.taskData && !this.taskData.checklist) {
+      this.taskData.checklist = [];
+    }
+
+    this.taskData.checklist.push({
+      label: "",
+      checkboxes: [],
+    });
+
+    this._updateTaskData();
   }
 
   /**
@@ -562,13 +616,17 @@ export class TiTaskData extends LitElement {
    * @private
    * @memberof TiTaskData
    * @param {CustomEvent} e - チェックボックスの変更イベント
+   * @param {number} index - 変更されたチェックリストのインデックス
    * @returns {*}
    **/
-  private _handleChangeCheckBoxes(e: CustomEvent): void {
-    this.taskData!.checkboxes = e.detail;
-    if (this.taskData?.checkboxes.length === 0) {
-      this.isCheckBoxEditMode = false;
+  private _saveCheckBoxes(e: CustomEvent, index: number): void {
+    if (!this.taskData || !this.taskData.checklist) {
+      return;
     }
+
+    // イベントから受け取った label と checkboxes を該当のチェックリストに反映する
+    this.taskData.checklist[index].checkboxes = e.detail.checkboxes;
+
     this._updateTaskData();
   }
 

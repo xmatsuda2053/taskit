@@ -1,5 +1,5 @@
 import { Member } from "./Member";
-import { CB } from "./CB";
+import { CL } from "./CL";
 import { Link } from "./Link";
 
 export const TASK_STATUS = {
@@ -17,7 +17,7 @@ export interface Task {
   description: string;
   dueDate?: Date;
   members: Member[];
-  checkboxes: CB[];
+  checklist: CL[];
   urls: Link[];
   folders: Link[];
   createdAt: Date;

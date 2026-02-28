@@ -4,12 +4,25 @@ sl-textarea {
   }
 }
 
+.edit-area {
+  sl-input {
+    margin-bottom: var(--sl-spacing-2x-small);
+  }
+}
+
+.checkbox-label {
+  margin-bottom: var(--sl-spacing-2x-small);
+  color: var(--sl-color-neutral-600);
+  size: var(--sl-font-size-small);
+}
+
 .checkbox-area {
   width: 100%;
   border: 1px solid var(--sl-color-neutral-300);
   border-radius: var(--sl-border-radius-medium);
   padding: var(--sl-spacing-2x-small) 0;
   padding-bottom: var(--sl-spacing-x-small);
+  margin-bottom: var(--sl-spacing-small);
   background-color: #ffffff;
 
   .checkbox-line {
