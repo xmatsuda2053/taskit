@@ -1,6 +1,10 @@
 .scrollable {
   overflow-y: scroll;
+  overflow-x: hidden;
   scroll-behavior: smooth;
+  height: 100%;
+  padding-right: 6px;
+  box-sizing: border-box;
 
   &::-webkit-scrollbar {
     width: 12px;
