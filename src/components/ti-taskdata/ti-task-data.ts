@@ -226,10 +226,10 @@ export class TiTaskData extends LitElement {
               </div>
               <!--期限日-->
               <div class="input-item">
-                <div class="label">
-                  <sl-icon library="taskit" name="calendar"></sl-icon>
-                  <span>期限日</span>
-                </div>
+                <ti-input-label
+                  .label=${"期限日"}
+                  .icon="${"calendar"}"
+                ></ti-input-label>
                 <sl-input
                   id="due-date"
                   placeholder="due date..."
@@ -242,34 +242,14 @@ export class TiTaskData extends LitElement {
               </div>
               <!--関係者-->
               <div class="input-item">
-                <div class="label">
-                  <sl-icon library="taskit" name="people"></sl-icon>
-                  <span>関係者</span>
-                  <div class="button-area">
-                    <sl-tooltip content="Add">
-                      <sl-icon-button
-                        library="taskit"
-                        name="plus-lg"
-                        ?disabled=${!this.isMemberEditMode}
-                        @click=${this._handleClickAddMember}
-                      ></sl-icon-button>
-                    </sl-tooltip>
-                    <sl-tooltip
-                      content="${this._getSaveOrEditTooltip(
-                        this.isMemberEditMode,
-                      )}"
-                    >
-                      <sl-icon-button
-                        library="taskit"
-                        name="${this._getSaveOrEditIconName(
-                          this.isMemberEditMode,
-                        )}"
-                        class=${this.isMemberEditMode ? "active" : ""}
-                        @click=${this._handleClickEditMember}
-                      ></sl-icon-button>
-                    </sl-tooltip>
-                  </div>
-                </div>
+                <ti-input-label
+                  .label=${"関係者"}
+                  .icon=${"people"}
+                  .editable=${true}
+                  .addable=${true}
+                  @ti-edit=${this._handleClickEditMember}
+                  @ti-add=${this._AddMember}
+                ></ti-input-label>
                 <div id="member" class="contents">
                   <ti-members
                     .isEditMode=${this.isMemberEditMode}
@@ -280,10 +260,10 @@ export class TiTaskData extends LitElement {
               </div>
               <!--説明-->
               <div class="input-item">
-                <div class="label">
-                  <sl-icon library="taskit" name="chat-left-text"></sl-icon>
-                  <span>説明</span>
-                </div>
+                <ti-input-label
+                  .label=${"説明"}
+                  .icon="${"chat-left-text"}"
+                ></ti-input-label>
                 <sl-textarea
                   id="description"
                   size="small"
@@ -327,26 +307,12 @@ export class TiTaskData extends LitElement {
             <div class="panel-contents scrollable">
               <!--関連URL-->
               <div class="input-item">
-                <div class="label">
-                  <sl-icon library="taskit" name="globe"></sl-icon>
-                  <span>URL</span>
-                  <div class="button-area">
-                    <sl-tooltip
-                      content="${this._getSaveOrEditTooltip(
-                        this.isUrlEditMode,
-                      )}"
-                    >
-                      <sl-icon-button
-                        library="taskit"
-                        name="${this._getSaveOrEditIconName(
-                          this.isUrlEditMode,
-                        )}"
-                        class=${this.isUrlEditMode ? "active" : ""}
-                        @click=${this._handleClickEditUrl}
-                      ></sl-icon-button>
-                    </sl-tooltip>
-                  </div>
-                </div>
+                <ti-input-label
+                  .label=${"URL"}
+                  .icon=${"globe"}
+                  .editable=${true}
+                  @ti-edit=${this._handleClickEditUrl}
+                ></ti-input-label>
                 <div class="contents">
                   <ti-link
                     .isEditMode=${this.isUrlEditMode}
@@ -358,26 +324,12 @@ export class TiTaskData extends LitElement {
               </div>
               <!--関連フォルダ-->
               <div class="input-item">
-                <div class="label">
-                  <sl-icon library="taskit" name="folder"></sl-icon>
-                  <span>フォルダ</span>
-                  <div class="button-area">
-                    <sl-tooltip
-                      content="${this._getSaveOrEditTooltip(
-                        this.isFolderEditMode,
-                      )}"
-                    >
-                      <sl-icon-button
-                        library="taskit"
-                        name="${this._getSaveOrEditIconName(
-                          this.isFolderEditMode,
-                        )}"
-                        class=${this.isFolderEditMode ? "active" : ""}
-                        @click=${this._handleClickEditFolder}
-                      ></sl-icon-button>
-                    </sl-tooltip>
-                  </div>
-                </div>
+                <ti-input-label
+                  .label=${"フォルダ"}
+                  .icon=${"folder"}
+                  .editable=${true}
+                  @ti-edit=${this._handleClickEditFolder}
+                ></ti-input-label>
                 <div class="contents">
                   <ti-link
                     .isEditMode=${this.isFolderEditMode}
@@ -395,10 +347,10 @@ export class TiTaskData extends LitElement {
               <!--検索タグ-->
               <div class="input-item">
                 <div class="input-item">
-                  <div class="label">
-                    <sl-icon library="taskit" name="folder"></sl-icon>
-                    <span>検索タグ</span>
-                  </div>
+                  <ti-input-label
+                    .label=${"検索タグ"}
+                    .icon="${"chat-left-text"}"
+                  ></ti-input-label>
                   <div class="contents">内容</div>
                 </div>
               </div>
@@ -523,7 +475,7 @@ export class TiTaskData extends LitElement {
    * @private
    * @memberof TiTaskData
    */
-  private _handleClickAddMember(): void {
+  private _AddMember(): void {
     if (!this.taskData) {
       return;
     }
