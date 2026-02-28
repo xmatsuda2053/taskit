@@ -1,0 +1,31 @@
+.label {
+  display: flex;
+  align-items: center;
+  font-size: var(--sl-font-size-small);
+  font-weight: bold;
+  color: var(--sl-color-neutral-600);
+  margin-bottom: var(--sl-spacing-2x-small);
+
+  sl-icon {
+    margin-right: var(--sl-spacing-2x-small);
+  }
+
+  .button-area {
+    margin-left: auto;
+    margin-right: 2px;
+
+    sl-icon-button {
+      font-size: var(--sl-font-size-medium);
+      color: var(--sl-color-neutral-400);
+
+      &::part(base) {
+        padding: 0;
+        padding-left: var(--sl-spacing-3x-small);
+      }
+
+      &.active {
+        color: var(--sl-color-primary-600);
+      }
+    }
+  }
+}

@@ -30,7 +30,7 @@ export class TaskItDB extends Dexie {
       description: "",
       dueDate: undefined,
       members: [],
-      checkboxes: [],
+      checklist: [],
       urls: [],
       folders: [],
       createdAt: now,
