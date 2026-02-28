@@ -137,15 +137,15 @@ export class TiLink extends LitElement {
     } else if (this.links?.length > 0) {
       return html` <div id="root">
         ${this.links.map(
-        (link) =>
-          html`<div
+          (link) =>
+            html`<div
               class="link-item"
               @click=${() => this._handleClickLink(link.path)}
             >
               <sl-icon library="taskit" name="copy"></sl-icon>
               <div class="link-label">${link.label}</div>
             </div>`,
-      )}
+        )}
       </div>`;
     } else {
       return html``;
@@ -171,7 +171,7 @@ export class TiLink extends LitElement {
   private async _handleClickLink(path: string): Promise<void> {
     try {
       await navigator.clipboard.writeText(path);
-      toastSuccess("coped", path);
+      toastSuccess("copied", path);
     } catch (err) {
       console.error("Failed to copy text: ", err);
     }

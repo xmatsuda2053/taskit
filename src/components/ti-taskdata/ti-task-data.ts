@@ -219,7 +219,6 @@ export class TiTaskData extends LitElement {
           <sl-textarea
             id="description"
             size="small"
-            resize="none"
             rows="3"
             resize="auto"
             placeholder="description..."

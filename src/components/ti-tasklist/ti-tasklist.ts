@@ -198,7 +198,7 @@ export class TiTaskList extends LitElement {
             id="add-task-button"
             @click=${() => this.addTaskDialog.show()}
           >
-            <sl-icon library="taskit" name="journal-plus"></sl-icon>
+            <sl-icon library="taskit" name="plus-lg"></sl-icon>
           </sl-button>
         </sl-tooltip>
         <sl-dialog
