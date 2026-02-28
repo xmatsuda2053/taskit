@@ -171,36 +171,43 @@ export class TiTaskData extends LitElement {
     if (!this.taskId) {
       return html``;
     }
-    return html`<div id="root">
-      <sl-tab-group>
-        <sl-tab slot="nav" panel="summary">
-          <span>タスク概要</span>
-        </sl-tab>
+    return html`<div class="container">
+      <div class="base main-area">
+        <sl-tab-group>
+          <sl-tab slot="nav" panel="summary">
+            <span>サマリ</span>
+          </sl-tab>
+          <sl-tab slot="nav" panel="checklist">
+            <span>チェックリスト</span>
+          </sl-tab>
+          <sl-tab slot="nav" panel="relation">
+            <span>リンク</span>
+          </sl-tab>
+          <sl-tab slot="nav" panel="property">
+            <span>プロパティ</span>
+          </sl-tab>
 
-        <sl-tab-panel name="summary">
-          <div class="summary-container scrollable">
-            <div class="title-area">
-              <!--タイトル-->
-              <sl-input
-                id="title"
-                placeholder="title..."
-                size="small"
-                value=${this.taskData?.title}
-                @sl-change=${this._handleChangeTitle}
-              ></sl-input>
-            </div>
-            <div class="control-area">
-              <!--コントロールボタン-->
-              <sl-button size="small" variant="primary">
-                <sl-icon
-                  library="taskit"
-                  name="play-circle-fill"
-                  slot="prefix"
-                ></sl-icon>
-                開始
-              </sl-button>
-            </div>
-            <div class="body-area ">
+          <sl-tab-panel name="summary">
+            <div class="panel-contents scrollable">
+              <!--タイトル,コントロールボタン-->
+              <div class="input-item title">
+                <sl-input
+                  id="title"
+                  class="title-item"
+                  placeholder="title..."
+                  size="small"
+                  value=${this.taskData?.title}
+                  @sl-change=${this._handleChangeTitle}
+                ></sl-input>
+                <sl-button size="small" variant="primary" class="title-item">
+                  <sl-icon
+                    library="taskit"
+                    name="play-circle-fill"
+                    slot="prefix"
+                  ></sl-icon>
+                  開始
+                </sl-button>
+              </div>
               <!--期限日-->
               <div class="input-item">
                 <div class="label">
@@ -216,22 +223,6 @@ export class TiTaskData extends LitElement {
                   @sl-change=${this._handleChangeDueDate}
                 >
                 </sl-input>
-              </div>
-              <!--説明-->
-              <div class="input-item">
-                <div class="label">
-                  <sl-icon library="taskit" name="chat-left-text"></sl-icon>
-                  <span>説明</span>
-                </div>
-                <sl-textarea
-                  id="description"
-                  size="small"
-                  rows="3"
-                  resize="auto"
-                  placeholder="description..."
-                  value=${this.taskData?.description}
-                  @sl-change=${this._handleChangeDescription}
-                ></sl-textarea>
               </div>
               <!--関係者-->
               <div class="input-item">
@@ -271,11 +262,31 @@ export class TiTaskData extends LitElement {
                   ></ti-members>
                 </div>
               </div>
-              <!--チェックリスト-->
+              <!--説明-->
+              <div class="input-item">
+                <div class="label">
+                  <sl-icon library="taskit" name="chat-left-text"></sl-icon>
+                  <span>説明</span>
+                </div>
+                <sl-textarea
+                  id="description"
+                  size="small"
+                  rows="3"
+                  resize="auto"
+                  placeholder="description..."
+                  value=${this.taskData?.description}
+                  @sl-change=${this._handleChangeDescription}
+                ></sl-textarea>
+              </div>
+            </div>
+          </sl-tab-panel>
+          <!--チェックリスト-->
+          <sl-tab-panel name="checklist">
+            <div class="panel-contents scrollable">
               <div class="input-item">
                 <div class="label">
                   <sl-icon library="taskit" name="ui-checks-grid"></sl-icon>
-                  <span>チェックリスト</span>
+                  <span>リスト一覧</span>
                   <div class="button-area">
                     <sl-tooltip
                       content="${this._getSaveOrEditTooltip(
@@ -301,11 +312,16 @@ export class TiTaskData extends LitElement {
                   ></ti-checkboxes>
                 </div>
               </div>
+            </div>
+          </sl-tab-panel>
+          <!--関連情報-->
+          <sl-tab-panel name="relation">
+            <div class="panel-contents scrollable">
               <!--関連URL-->
               <div class="input-item">
                 <div class="label">
                   <sl-icon library="taskit" name="globe"></sl-icon>
-                  <span>関連URL</span>
+                  <span>URL</span>
                   <div class="button-area">
                     <sl-tooltip
                       content="${this._getSaveOrEditTooltip(
@@ -336,7 +352,7 @@ export class TiTaskData extends LitElement {
               <div class="input-item">
                 <div class="label">
                   <sl-icon library="taskit" name="folder"></sl-icon>
-                  <span>関連フォルダ</span>
+                  <span>フォルダ</span>
                   <div class="button-area">
                     <sl-tooltip
                       content="${this._getSaveOrEditTooltip(
@@ -364,9 +380,36 @@ export class TiTaskData extends LitElement {
                 </div>
               </div>
             </div>
-          </div>
-        </sl-tab-panel>
-      </sl-tab-group>
+          </sl-tab-panel>
+          <!--プロパティ-->
+          <sl-tab-panel name="property">
+            <div class="panel-contents scrollable">
+              <!--検索タグ-->
+              <div class="input-item">
+                <div class="input-item">
+                  <div class="label">
+                    <sl-icon library="taskit" name="folder"></sl-icon>
+                    <span>検索タグ</span>
+                  </div>
+                  <div class="contents">内容</div>
+                </div>
+              </div>
+            </div>
+          </sl-tab-panel>
+        </sl-tab-group>
+      </div>
+      <div class="base sub-area">
+        <sl-tab-group>
+          <sl-tab slot="nav" panel="log">
+            <span>ログ</span>
+          </sl-tab>
+          <sl-tab slot="nav" panel="note">
+            <span>ノート</span>
+          </sl-tab>
+          <sl-tab-panel name="log"> </sl-tab-panel>
+          <sl-tab-panel name="note"> </sl-tab-panel>
+        </sl-tab-group>
+      </div>
     </div>`;
   }
 

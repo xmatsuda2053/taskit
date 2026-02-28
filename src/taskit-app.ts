@@ -107,7 +107,6 @@ export class TaskitApp extends LitElement {
       <div class="contents1-area">
         <ti-task-data .taskId=${this.selectedTaskId}></ti-task-data>
       </div>
-      <div class="contents2-area"></div>
       <div class="footer-area"></div>
     </div>`;
   }
