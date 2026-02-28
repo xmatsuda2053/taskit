@@ -138,7 +138,7 @@ export class TiTaskItem extends LitElement {
         </div>
         <div slot="content">
           ${this.title}<br />
-          期限日:${formatDate(this.dueDate)}
+          期限日:${formatDate(this.dueDate, "yyyy/MM/dd")}
         </div>
       </sl-tooltip>
       <sl-dropdown>
