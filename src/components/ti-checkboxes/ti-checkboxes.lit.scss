@@ -9,6 +9,8 @@ sl-textarea {
   border: 1px solid var(--sl-color-neutral-300);
   border-radius: var(--sl-border-radius-medium);
   padding: var(--sl-spacing-2x-small) 0;
+  padding-bottom: var(--sl-spacing-x-small);
+  background-color: #ffffff;
 
   .checkbox-line {
     padding-left: var(--sl-spacing-x-small);

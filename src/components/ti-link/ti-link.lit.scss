@@ -15,11 +15,12 @@ sl-textarea {
     align-items: center;
     gap: var(--sl--sl-spacing-2x-small);
 
-    color: var(--sl-color-neutral-600);
+    color: var(--sl-color-primary-600);
+    background-color: #ffffff;
 
     border: 1px solid var(--sl-color-neutral-300);
     border-radius: var(--sl-border-radius-medium);
-    padding: var(--sl-spacing-3x-small) 0;
+    padding: var(--sl-spacing-2x-small) 0;
     margin-bottom: var(--sl-spacing-2x-small);
 
     cursor: pointer;

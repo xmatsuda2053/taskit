@@ -172,175 +172,243 @@ export class TiTaskData extends LitElement {
       return html``;
     }
     return html`<div class="container">
-      <div class="title-area">
-        <!--タイトル-->
-        <sl-input
-          id="title"
-          placeholder="title..."
-          size="small"
-          value=${this.taskData?.title}
-          @sl-change=${this._handleChangeTitle}
-        ></sl-input>
-      </div>
-      <div class="control-area">
-        <!--コントロールボタン-->
-        <sl-button size="small" variant="primary">
-          <sl-icon
-            library="taskit"
-            name="play-circle-fill"
-            slot="prefix"
-          ></sl-icon>
-          開始
-        </sl-button>
-      </div>
-      <div class="body-area scrollable">
-        <!--期限日-->
-        <div class="input-item">
-          <div class="label">
-            <sl-icon library="taskit" name="calendar"></sl-icon>
-            <span>期限日</span>
-          </div>
-          <sl-input
-            id="due-date"
-            placeholder="due date..."
-            size="small"
-            type="date"
-            value=${formatDate(this.taskData?.dueDate, "yyyy-MM-dd")}
-            @sl-change=${this._handleChangeDueDate}
-          >
-          </sl-input>
-        </div>
-        <!--説明-->
-        <div class="input-item">
-          <div class="label">
-            <sl-icon library="taskit" name="chat-left-text"></sl-icon>
-            <span>説明</span>
-          </div>
-          <sl-textarea
-            id="description"
-            size="small"
-            resize="none"
-            rows="3"
-            resize="auto"
-            placeholder="description..."
-            value=${this.taskData?.description}
-            @sl-change=${this._handleChangeDescription}
-          ></sl-textarea>
-        </div>
-        <!--関係者-->
-        <div class="input-item">
-          <div class="label">
-            <sl-icon library="taskit" name="people"></sl-icon>
-            <span>関係者</span>
-            <div class="button-area">
-              <sl-tooltip content="Add">
-                <sl-icon-button
-                  library="taskit"
-                  name="plus-lg"
-                  ?disabled=${!this.isMemberEditMode}
-                  @click=${this._handleClickAddMember}
-                ></sl-icon-button>
-              </sl-tooltip>
-              <sl-tooltip
-                content="${this._getSaveOrEditTooltip(this.isMemberEditMode)}"
-              >
-                <sl-icon-button
-                  library="taskit"
-                  name="${this._getSaveOrEditIconName(this.isMemberEditMode)}"
-                  class=${this.isMemberEditMode ? "active" : ""}
-                  @click=${this._handleClickEditMember}
-                ></sl-icon-button>
-              </sl-tooltip>
-            </div>
-          </div>
-          <div id="member" class="contents">
-            <ti-members
-              .isEditMode=${this.isMemberEditMode}
-              .members=${this.taskData?.members || []}
-              @ti-change-members=${this._handleChangeMembers}
-            ></ti-members>
-          </div>
-        </div>
-        <!--チェックリスト-->
-        <div class="input-item">
-          <div class="label">
-            <sl-icon library="taskit" name="ui-checks-grid"></sl-icon>
+      <div class="base main-area">
+        <sl-tab-group>
+          <sl-tab slot="nav" panel="summary">
+            <span>サマリ</span>
+          </sl-tab>
+          <sl-tab slot="nav" panel="checklist">
             <span>チェックリスト</span>
-            <div class="button-area">
-              <sl-tooltip
-                content="${this._getSaveOrEditTooltip(this.isCheckBoxEditMode)}"
-              >
-                <sl-icon-button
-                  library="taskit"
-                  name="${this._getSaveOrEditIconName(this.isCheckBoxEditMode)}"
-                  class=${this.isCheckBoxEditMode ? "active" : ""}
-                  @click=${this._handleClickEditCheckBox}
-                ></sl-icon-button>
-              </sl-tooltip>
+          </sl-tab>
+          <sl-tab slot="nav" panel="relation">
+            <span>リンク</span>
+          </sl-tab>
+          <sl-tab slot="nav" panel="property">
+            <span>プロパティ</span>
+          </sl-tab>
+
+          <sl-tab-panel name="summary">
+            <div class="panel-contents scrollable">
+              <!--タイトル,コントロールボタン-->
+              <div class="input-item title">
+                <sl-input
+                  id="title"
+                  class="title-item"
+                  placeholder="title..."
+                  size="small"
+                  value=${this.taskData?.title}
+                  @sl-change=${this._handleChangeTitle}
+                ></sl-input>
+                <sl-button size="small" variant="primary" class="title-item">
+                  <sl-icon
+                    library="taskit"
+                    name="play-circle-fill"
+                    slot="prefix"
+                  ></sl-icon>
+                  開始
+                </sl-button>
+              </div>
+              <!--期限日-->
+              <div class="input-item">
+                <div class="label">
+                  <sl-icon library="taskit" name="calendar"></sl-icon>
+                  <span>期限日</span>
+                </div>
+                <sl-input
+                  id="due-date"
+                  placeholder="due date..."
+                  size="small"
+                  type="date"
+                  value=${formatDate(this.taskData?.dueDate, "yyyy-MM-dd")}
+                  @sl-change=${this._handleChangeDueDate}
+                >
+                </sl-input>
+              </div>
+              <!--関係者-->
+              <div class="input-item">
+                <div class="label">
+                  <sl-icon library="taskit" name="people"></sl-icon>
+                  <span>関係者</span>
+                  <div class="button-area">
+                    <sl-tooltip content="Add">
+                      <sl-icon-button
+                        library="taskit"
+                        name="plus-lg"
+                        ?disabled=${!this.isMemberEditMode}
+                        @click=${this._handleClickAddMember}
+                      ></sl-icon-button>
+                    </sl-tooltip>
+                    <sl-tooltip
+                      content="${this._getSaveOrEditTooltip(
+                        this.isMemberEditMode,
+                      )}"
+                    >
+                      <sl-icon-button
+                        library="taskit"
+                        name="${this._getSaveOrEditIconName(
+                          this.isMemberEditMode,
+                        )}"
+                        class=${this.isMemberEditMode ? "active" : ""}
+                        @click=${this._handleClickEditMember}
+                      ></sl-icon-button>
+                    </sl-tooltip>
+                  </div>
+                </div>
+                <div id="member" class="contents">
+                  <ti-members
+                    .isEditMode=${this.isMemberEditMode}
+                    .members=${this.taskData?.members || []}
+                    @ti-change-members=${this._handleChangeMembers}
+                  ></ti-members>
+                </div>
+              </div>
+              <!--説明-->
+              <div class="input-item">
+                <div class="label">
+                  <sl-icon library="taskit" name="chat-left-text"></sl-icon>
+                  <span>説明</span>
+                </div>
+                <sl-textarea
+                  id="description"
+                  size="small"
+                  rows="3"
+                  resize="auto"
+                  placeholder="description..."
+                  value=${this.taskData?.description}
+                  @sl-change=${this._handleChangeDescription}
+                ></sl-textarea>
+              </div>
             </div>
-          </div>
-          <div class="contents">
-            <ti-checkboxes
-              .isEditMode=${this.isCheckBoxEditMode}
-              .checkboxes=${this.taskData?.checkboxes || []}
-              @ti-change-checkboxes=${this._handleChangeCheckBoxes}
-            ></ti-checkboxes>
-          </div>
-        </div>
-        <!--関連URL-->
-        <div class="input-item">
-          <div class="label">
-            <sl-icon library="taskit" name="globe"></sl-icon>
-            <span>関連URL</span>
-            <div class="button-area">
-              <sl-tooltip
-                content="${this._getSaveOrEditTooltip(this.isUrlEditMode)}"
-              >
-                <sl-icon-button
-                  library="taskit"
-                  name="${this._getSaveOrEditIconName(this.isUrlEditMode)}"
-                  class=${this.isUrlEditMode ? "active" : ""}
-                  @click=${this._handleClickEditUrl}
-                ></sl-icon-button>
-              </sl-tooltip>
+          </sl-tab-panel>
+          <!--チェックリスト-->
+          <sl-tab-panel name="checklist">
+            <div class="panel-contents scrollable">
+              <div class="input-item">
+                <div class="label">
+                  <sl-icon library="taskit" name="ui-checks-grid"></sl-icon>
+                  <span>リスト一覧</span>
+                  <div class="button-area">
+                    <sl-tooltip
+                      content="${this._getSaveOrEditTooltip(
+                        this.isCheckBoxEditMode,
+                      )}"
+                    >
+                      <sl-icon-button
+                        library="taskit"
+                        name="${this._getSaveOrEditIconName(
+                          this.isCheckBoxEditMode,
+                        )}"
+                        class=${this.isCheckBoxEditMode ? "active" : ""}
+                        @click=${this._handleClickEditCheckBox}
+                      ></sl-icon-button>
+                    </sl-tooltip>
+                  </div>
+                </div>
+                <div class="contents">
+                  <ti-checkboxes
+                    .isEditMode=${this.isCheckBoxEditMode}
+                    .checkboxes=${this.taskData?.checkboxes || []}
+                    @ti-change-checkboxes=${this._handleChangeCheckBoxes}
+                  ></ti-checkboxes>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="contents">
-            <ti-link
-              .isEditMode=${this.isUrlEditMode}
-              .links=${this.taskData?.urls ?? []}
-              @ti-change-links=${this._handleChangeUrl}
-            >
-            </ti-link>
-          </div>
-        </div>
-        <!--関連フォルダ-->
-        <div class="input-item">
-          <div class="label">
-            <sl-icon library="taskit" name="folder"></sl-icon>
-            <span>関連フォルダ</span>
-            <div class="button-area">
-              <sl-tooltip
-                content="${this._getSaveOrEditTooltip(this.isFolderEditMode)}"
-              >
-                <sl-icon-button
-                  library="taskit"
-                  name="${this._getSaveOrEditIconName(this.isFolderEditMode)}"
-                  class=${this.isFolderEditMode ? "active" : ""}
-                  @click=${this._handleClickEditFolder}
-                ></sl-icon-button>
-              </sl-tooltip>
+          </sl-tab-panel>
+          <!--関連情報-->
+          <sl-tab-panel name="relation">
+            <div class="panel-contents scrollable">
+              <!--関連URL-->
+              <div class="input-item">
+                <div class="label">
+                  <sl-icon library="taskit" name="globe"></sl-icon>
+                  <span>URL</span>
+                  <div class="button-area">
+                    <sl-tooltip
+                      content="${this._getSaveOrEditTooltip(
+                        this.isUrlEditMode,
+                      )}"
+                    >
+                      <sl-icon-button
+                        library="taskit"
+                        name="${this._getSaveOrEditIconName(
+                          this.isUrlEditMode,
+                        )}"
+                        class=${this.isUrlEditMode ? "active" : ""}
+                        @click=${this._handleClickEditUrl}
+                      ></sl-icon-button>
+                    </sl-tooltip>
+                  </div>
+                </div>
+                <div class="contents">
+                  <ti-link
+                    .isEditMode=${this.isUrlEditMode}
+                    .links=${this.taskData?.urls ?? []}
+                    @ti-change-links=${this._handleChangeUrl}
+                  >
+                  </ti-link>
+                </div>
+              </div>
+              <!--関連フォルダ-->
+              <div class="input-item">
+                <div class="label">
+                  <sl-icon library="taskit" name="folder"></sl-icon>
+                  <span>フォルダ</span>
+                  <div class="button-area">
+                    <sl-tooltip
+                      content="${this._getSaveOrEditTooltip(
+                        this.isFolderEditMode,
+                      )}"
+                    >
+                      <sl-icon-button
+                        library="taskit"
+                        name="${this._getSaveOrEditIconName(
+                          this.isFolderEditMode,
+                        )}"
+                        class=${this.isFolderEditMode ? "active" : ""}
+                        @click=${this._handleClickEditFolder}
+                      ></sl-icon-button>
+                    </sl-tooltip>
+                  </div>
+                </div>
+                <div class="contents">
+                  <ti-link
+                    .isEditMode=${this.isFolderEditMode}
+                    .links=${this.taskData?.folders ?? []}
+                    @ti-change-links=${this._handleChangeFolder}
+                  >
+                  </ti-link>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="contents">
-            <ti-link
-              .isEditMode=${this.isFolderEditMode}
-              .links=${this.taskData?.folders ?? []}
-              @ti-change-links=${this._handleChangeFolder}
-            >
-            </ti-link>
-          </div>
-        </div>
+          </sl-tab-panel>
+          <!--プロパティ-->
+          <sl-tab-panel name="property">
+            <div class="panel-contents scrollable">
+              <!--検索タグ-->
+              <div class="input-item">
+                <div class="input-item">
+                  <div class="label">
+                    <sl-icon library="taskit" name="folder"></sl-icon>
+                    <span>検索タグ</span>
+                  </div>
+                  <div class="contents">内容</div>
+                </div>
+              </div>
+            </div>
+          </sl-tab-panel>
+        </sl-tab-group>
+      </div>
+      <div class="base sub-area">
+        <sl-tab-group>
+          <sl-tab slot="nav" panel="log">
+            <span>ログ</span>
+          </sl-tab>
+          <sl-tab slot="nav" panel="note">
+            <span>ノート</span>
+          </sl-tab>
+          <sl-tab-panel name="log"> </sl-tab-panel>
+          <sl-tab-panel name="note"> </sl-tab-panel>
+        </sl-tab-group>
       </div>
     </div>`;
   }
