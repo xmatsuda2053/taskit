@@ -379,11 +379,21 @@ export class TiTaskData extends LitElement {
     </div>`;
   }
 
+  /**
+   * ステータス変更イベントをハンドルし、タスクデータを更新します。
+   * * @private
+   * @param {CustomEvent} e - ステータス変更イベント。`e.detail` に新しいステータスコードが含まれていることを期待します。
+   * @description
+   * 1. 既存のタスクデータが存在しない場合は処理を中断します。
+   * 2. 現在のタスクデータをコピーし、ステータスのみを新しい値で上書き（イミュータブルな更新）します。
+   * 3. 最後に `_updateTaskData()` を呼び出し、変更を外部や永続化層へ反映させます。
+   */
   private _handleChangeStatus(e: CustomEvent): void {
     if (!this._taskData) {
       return;
     }
-    this._taskData = { ...this._taskData, status: e.detail };
+    const newStatus = e.detail;
+    this._taskData = { ...this._taskData, status: newStatus };
     this._updateTaskData();
   }
 

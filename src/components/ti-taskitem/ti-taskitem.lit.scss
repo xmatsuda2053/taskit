@@ -6,10 +6,6 @@
   display: flex;
   flex-direction: row;
 
-  &:hover {
-    background-color: var(--sl-color-neutral-200);
-  }
-
   .label {
     flex: 1 1 auto;
 
@@ -20,12 +16,6 @@
 
     padding: 1px var(--sl-spacing-2x-small);
     padding-right: 0;
-
-    &:hover {
-      color: var(--sl-color-primary-800);
-      text-decoration: underline;
-      font-weight: bold;
-    }
 
     .task-title {
       margin-top: -1px;
@@ -44,5 +34,30 @@
 
   .icon {
     flex: 0 0 auto;
+  }
+
+  &.selected {
+    background-color: var(--sl-color-primary-600);
+    color: #fffff0;
+
+    .overdue {
+      color: #fffff0;
+    }
+
+    sl-dropdown {
+      .icon {
+        color: #fffff0;
+      }
+    }
+  }
+
+  &:hover {
+    background-color: var(--sl-color-neutral-200);
+
+    .label {
+      color: var(--sl-color-primary-800);
+      text-decoration: underline;
+      font-weight: bold;
+    }
   }
 }
