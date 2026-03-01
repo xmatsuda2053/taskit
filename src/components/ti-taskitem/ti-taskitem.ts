@@ -6,7 +6,7 @@ import {
   PropertyValues,
   HTMLTemplateResult,
 } from "lit";
-import { customElement, state, property, query } from "lit/decorators.js";
+import { customElement, state, property } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import { db } from "@/service/TaskItDB";
@@ -50,7 +50,7 @@ export class TiTaskItem extends LitElement {
    * @type {string}
    * @memberof TiTaskItem
    */
-  @state() title: string = "";
+  @state() private _title: string = "";
 
   /**
    * Creates an instance of TiTaskItem.
@@ -98,9 +98,9 @@ export class TiTaskItem extends LitElement {
    * @param {Event} e
    * @memberof TiTaskItem
    */
-  private handleSlotChange(e: Event) {
+  private _handleSlotChange(e: Event) {
     const slot = e.target as HTMLSlotElement;
-    this.title = slot
+    this._title = slot
       .assignedNodes({ flatten: true })
       .map((node) => node.textContent ?? "")
       .join("")
@@ -133,11 +133,11 @@ export class TiTaskItem extends LitElement {
             class="icon"
           ></sl-icon>
           <div class="task-title" @click=${this._handleClickTaskItem}>
-            <slot @slotchange=${this.handleSlotChange}></slot>
+            <slot @slotchange=${this._handleSlotChange}></slot>
           </div>
         </div>
         <div slot="content">
-          ${this.title}<br />
+          ${this._title}<br />
           期限日:${formatDate(this.dueDate, "yyyy/MM/dd")}
         </div>
       </sl-tooltip>
@@ -149,7 +149,7 @@ export class TiTaskItem extends LitElement {
           slot="trigger"
         ></sl-icon-button>
         <sl-menu>
-          <sl-menu-item @click=${this._deleteTask}>削除</sl-menu-item>
+          <sl-menu-item @click=${this._handleDeleteTask}>削除</sl-menu-item>
         </sl-menu>
       </sl-dropdown>
     </div>`;
@@ -174,9 +174,9 @@ export class TiTaskItem extends LitElement {
    * @return {*}  {Promise<void>}
    * @memberof TiTaskItem
    */
-  private async _deleteTask(): Promise<void> {
+  private async _handleDeleteTask(): Promise<void> {
     if (!this.taskId) return;
-    if (!confirm(`タスク「${this.title}」を削除しますか？`)) {
+    if (!confirm(`タスク「${this._title}」を削除しますか？`)) {
       return;
     }
 

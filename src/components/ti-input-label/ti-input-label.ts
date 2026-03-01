@@ -48,7 +48,7 @@ export class TiInputLabel extends LitElement {
    * @type {boolean}
    * @memberof TiInputLabel
    */
-  @property({ type: Boolean }) editable: boolean = false;
+  @property({ type: Boolean }) isEditable: boolean = false;
 
   /**
    * データ追加可否
@@ -56,7 +56,7 @@ export class TiInputLabel extends LitElement {
    * @type {boolean}
    * @memberof TiInputLabel
    */
-  @property({ type: Boolean }) addable: boolean = false;
+  @property({ type: Boolean }) isAddable: boolean = false;
 
   /**
    * 編集モードの制御
@@ -65,7 +65,7 @@ export class TiInputLabel extends LitElement {
    * @type {boolean}
    * @memberof TiInputLabel
    */
-  @state() private isEditMode: boolean = false;
+  @state() private _isEditMode: boolean = false;
 
   /**
    * Creates an instance of TiInputLabel.
@@ -134,14 +134,14 @@ export class TiInputLabel extends LitElement {
    * @memberof TiInputLabel
    */
   private _renderAddButton(): HTMLTemplateResult {
-    if (!this.editable) return html``;
-    if (!this.addable) return html``;
+    if (!this.isEditable) return html``;
+    if (!this.isAddable) return html``;
 
     return html`<sl-tooltip content="Add">
       <sl-icon-button
         library="taskit"
         name="plus-lg"
-        ?disabled=${!this.isEditMode}
+        ?disabled=${!this._isEditMode}
         @click=${this._handleClickAdd}
       >
       </sl-icon-button>
@@ -165,13 +165,13 @@ export class TiInputLabel extends LitElement {
    * @memberof TiInputLabel
    */
   private _renderEditButton(): HTMLTemplateResult {
-    if (!this.editable) return html``;
+    if (!this.isEditable) return html``;
 
-    return html` <sl-tooltip content="${this.isEditMode ? "Complete" : "Edit"}">
+    return html` <sl-tooltip content="${this._isEditMode ? "Complete" : "Edit"}">
       <sl-icon-button
         library="taskit"
-        name="${this.isEditMode ? "check-lg" : "pencil-square"}"
-        class=${this.isEditMode ? "active" : ""}
+        name="${this._isEditMode ? "check-lg" : "pencil-square"}"
+        class=${this._isEditMode ? "active" : ""}
         @click=${this._handleClickEdit}
       ></sl-icon-button>
     </sl-tooltip>`;
@@ -181,7 +181,7 @@ export class TiInputLabel extends LitElement {
    * 編集ボタンクリックのイベント
    */
   private _handleClickEdit(): void {
-    this.isEditMode = !this.isEditMode;
-    emit(this, "ti-edit", { detail: this.isEditMode });
+    this._isEditMode = !this._isEditMode;
+    emit(this, "ti-edit", { detail: this._isEditMode });
   }
 }

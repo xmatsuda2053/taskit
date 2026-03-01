@@ -1,7 +1,6 @@
 import {
   LitElement,
   html,
-  nothing,
   css,
   unsafeCSS,
   PropertyValues,
@@ -16,7 +15,7 @@ import {
 } from "lit/decorators.js";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import { db } from "@/service/TaskItDB";
-import { TASK_STATUS, type Task } from "@/models/Task";
+import { type Task } from "@/models/Task";
 import { formatDate } from "@/service/utils";
 
 import "@shoelace-style/shoelace/dist/themes/light.css";
@@ -56,14 +55,14 @@ export class TiTaskData extends LitElement {
    * @type {Task | undefined}
    * @memberof TiTaskData
    */
-  @state() private taskData?: Task;
+  @state() private _taskData?: Task;
 
   /**
    * 関係者が編集モードかどうかを管理するフラグ
    * @type {boolean}
    * @memberof TiTaskData
    */
-  @state() private isMemberEditMode: boolean = false;
+  @state() private _isMemberEditMode: boolean = false;
 
   /**
    * チェックボックスが編集モードかどうかを管理するフラグ
@@ -72,7 +71,7 @@ export class TiTaskData extends LitElement {
    * @type {boolean}
    * @memberof TiTaskData
    */
-  @state() private isCheckBoxEditMode: boolean = false;
+  @state() private _isCheckBoxEditMode: boolean = false;
 
   /**
    * URLが編集モードかどうかを管理するフラグ
@@ -81,7 +80,7 @@ export class TiTaskData extends LitElement {
    * @type {boolean}
    * @memberof TiTaskData
    */
-  @state() private isUrlEditMode: boolean = false;
+  @state() private _isUrlEditMode: boolean = false;
 
   /**
    * フォルダが編集モードかどうかを管理するフラグ
@@ -90,7 +89,7 @@ export class TiTaskData extends LitElement {
    * @type {boolean}
    * @memberof TiTaskData
    */
-  @state() private isFolderEditMode: boolean = false;
+  @state() private _isFolderEditMode: boolean = false;
 
   /**
    *タイトル入力フィールドの参照を取得するためのクエリデコレーター
@@ -99,7 +98,7 @@ export class TiTaskData extends LitElement {
    * @type {SlInput}
    * @memberof TiTaskData
    */
-  @query("#title") private titleInput!: SlInput;
+  @query("#title") private _titleInput!: SlInput;
 
   /**
    * 期限日入力フィールドの参照を取得するためのクエリデコレーター
@@ -108,7 +107,7 @@ export class TiTaskData extends LitElement {
    * @type {SlInput}
    * @memberof TiTaskData
    */
-  @query("#due-date") private dueDateInput!: SlInput;
+  @query("#due-date") private _dueDateInput!: SlInput;
 
   /**
    * 説明入力フィールドの参照を取得するためのクエリデコレーター
@@ -117,7 +116,7 @@ export class TiTaskData extends LitElement {
    * @type {SlTextarea}
    * @memberof TiTaskData
    * */
-  @query("#description") private descriptionInput!: SlTextarea;
+  @query("#description") private _descriptionTextarea!: SlTextarea;
 
   /**
    * チェックリスト要素
@@ -126,7 +125,7 @@ export class TiTaskData extends LitElement {
    * @type {TiCheckboxes[]}
    * @memberof TiTaskData
    */
-  @queryAll("ti-checkboxes") private tiCheckboxes!: TiCheckboxes[];
+  @queryAll("ti-checkboxes") private _tiCheckboxesElements!: TiCheckboxes[];
 
   /**
    * Creates an instance of TiTaskData.
@@ -167,9 +166,9 @@ export class TiTaskData extends LitElement {
     super.willUpdate(_changedProperties);
     if (_changedProperties.has("taskId")) {
       if (this.taskId !== undefined) {
-        this.taskData = await db.getTaskById(this.taskId);
+        this._taskData = await db.getTaskById(this.taskId);
       } else {
-        this.taskData = undefined;
+        this._taskData = undefined;
       }
     }
   }
@@ -212,7 +211,7 @@ export class TiTaskData extends LitElement {
                   class="title-item"
                   placeholder="title..."
                   size="small"
-                  value=${this.taskData?.title}
+                  value=${this._taskData?.title}
                   @sl-change=${this._handleChangeTitle}
                 ></sl-input>
                 <sl-button size="small" variant="primary" class="title-item">
@@ -235,7 +234,7 @@ export class TiTaskData extends LitElement {
                   placeholder="due date..."
                   size="small"
                   type="date"
-                  value=${formatDate(this.taskData?.dueDate, "yyyy-MM-dd")}
+                  value=${formatDate(this._taskData?.dueDate, "yyyy-MM-dd")}
                   @sl-change=${this._handleChangeDueDate}
                 >
                 </sl-input>
@@ -248,12 +247,12 @@ export class TiTaskData extends LitElement {
                   .editable=${true}
                   .addable=${true}
                   @ti-edit=${this._handleClickEditMember}
-                  @ti-add=${this._AddMember}
+                  @ti-add=${this._addMember}
                 ></ti-input-label>
                 <div id="member" class="contents">
                   <ti-members
-                    .isEditMode=${this.isMemberEditMode}
-                    .members=${this.taskData?.members || []}
+                    .isEditMode=${this._isMemberEditMode}
+                    .members=${this._taskData?.members || []}
                     @ti-change-members=${this._handleChangeMembers}
                   ></ti-members>
                 </div>
@@ -267,10 +266,10 @@ export class TiTaskData extends LitElement {
                 <sl-textarea
                   id="description"
                   size="small"
-                  rows="3"
+                  rows="8"
                   resize="auto"
                   placeholder="description..."
-                  value=${this.taskData?.description}
+                  value=${this._taskData?.description}
                   @sl-change=${this._handleChangeDescription}
                 ></sl-textarea>
               </div>
@@ -289,15 +288,15 @@ export class TiTaskData extends LitElement {
                   @ti-add=${this._addChecklist}
                 ></ti-input-label>
                 <div class="contents">
-                  ${this.taskData?.checklist.map((c, index) => {
-                    return html`<ti-checkboxes
+                  ${this._taskData?.checklist.map((c, index) => {
+      return html`<ti-checkboxes
                       .label=${c.label}
                       .checkboxes=${c.checkboxes}
-                      .isEditMode=${this.isCheckBoxEditMode}
+                      .isEditMode=${this._isCheckBoxEditMode}
                       @ti-change-checkboxes=${(e: CustomEvent) =>
-                        this._saveCheckBoxes(e, index)}
+          this._saveCheckBoxes(e, index)}
                     ></ti-checkboxes>`;
-                  })}
+    })}
                 </div>
               </div>
             </div>
@@ -310,13 +309,13 @@ export class TiTaskData extends LitElement {
                 <ti-input-label
                   .label=${"URL"}
                   .icon=${"globe"}
-                  .editable=${true}
+                  .isEditable=${true}
                   @ti-edit=${this._handleClickEditUrl}
                 ></ti-input-label>
                 <div class="contents">
                   <ti-link
-                    .isEditMode=${this.isUrlEditMode}
-                    .links=${this.taskData?.urls ?? []}
+                    .isEditMode=${this._isUrlEditMode}
+                    .links=${this._taskData?.urls ?? []}
                     @ti-change-links=${this._handleChangeUrl}
                   >
                   </ti-link>
@@ -327,13 +326,13 @@ export class TiTaskData extends LitElement {
                 <ti-input-label
                   .label=${"フォルダ"}
                   .icon=${"folder"}
-                  .editable=${true}
+                  .isEditable=${true}
                   @ti-edit=${this._handleClickEditFolder}
                 ></ti-input-label>
                 <div class="contents">
                   <ti-link
-                    .isEditMode=${this.isFolderEditMode}
-                    .links=${this.taskData?.folders ?? []}
+                    .isEditMode=${this._isFolderEditMode}
+                    .links=${this._taskData?.folders ?? []}
                     @ti-change-links=${this._handleChangeFolder}
                   >
                   </ti-link>
@@ -374,38 +373,16 @@ export class TiTaskData extends LitElement {
   }
 
   /**
-   * 編集モードに応じたツールチップの内容を取得する。
-   *
-   * @private
-   * @param isEditMode
-   * @returns
-   */
-  private _getSaveOrEditTooltip(isEditMode: boolean): string {
-    return isEditMode ? "Complete" : "Edit";
-  }
-
-  /**
-   * 編集モードに応じたアイコン名を取得する。
-   *
-   * @private
-   * @param isEditMode
-   * @returns
-   */
-  private _getSaveOrEditIconName(isEditMode: boolean): string {
-    return isEditMode ? "check-lg" : "pencil-square";
-  }
-
-  /**
    * タイトルの変更入力を検知しDBを更新する。
    *
    * @private
    * @returns {*}
    */
   private _handleChangeTitle(): void {
-    if (!this.taskData) {
+    if (!this._taskData) {
       return;
     }
-    this.taskData.title = this.titleInput.value;
+    this._taskData.title = this._titleInput.value;
     this._updateTaskData();
   }
 
@@ -416,16 +393,16 @@ export class TiTaskData extends LitElement {
    * @returns {*}
    */
   private _handleChangeDueDate(): void {
-    if (!this.taskData) {
+    if (!this._taskData) {
       return;
     }
 
-    const dueDateValue = this.dueDateInput.value;
+    const dueDateValue = this._dueDateInput.value;
     if (!dueDateValue) {
       return;
     }
 
-    this.taskData.dueDate = new Date(dueDateValue);
+    this._taskData.dueDate = new Date(dueDateValue);
     this._updateTaskData();
   }
 
@@ -437,10 +414,10 @@ export class TiTaskData extends LitElement {
    * @memberof TiTaskData
    * */
   private _handleChangeDescription(): void {
-    if (!this.taskData) {
+    if (!this._taskData) {
       return;
     }
-    this.taskData.description = this.descriptionInput.value;
+    this._taskData.description = this._descriptionTextarea.value;
     this._updateTaskData();
   }
 
@@ -452,11 +429,11 @@ export class TiTaskData extends LitElement {
    * @memberof TiTaskData
    */
   private async _updateTaskData(): Promise<void> {
-    if (!this.taskData) {
+    if (!this._taskData) {
       return;
     }
-    db.updateTask(this.taskData);
-    this.taskData = await db.getTaskById(this.taskData.id!);
+    db.updateTask(this._taskData);
+    this._taskData = await db.getTaskById(this._taskData.id!);
   }
 
   /**
@@ -466,7 +443,7 @@ export class TiTaskData extends LitElement {
    * @memberof TiTaskData
    */
   private _handleClickEditMember(): void {
-    this.isMemberEditMode = !this.isMemberEditMode;
+    this._isMemberEditMode = !this._isMemberEditMode;
   }
 
   /**
@@ -475,16 +452,16 @@ export class TiTaskData extends LitElement {
    * @private
    * @memberof TiTaskData
    */
-  private _AddMember(): void {
-    if (!this.taskData) {
+  private _addMember(): void {
+    if (!this._taskData) {
       return;
     }
 
-    if (this.taskData && !this.taskData.members) {
-      this.taskData.members = [];
+    if (this._taskData && !this._taskData.members) {
+      this._taskData.members = [];
     }
 
-    this.taskData.members.push({
+    this._taskData.members.push({
       div: "",
       name: "",
       tel: "",
@@ -499,9 +476,9 @@ export class TiTaskData extends LitElement {
    * @memberof TiTaskData
    */
   private _handleChangeMembers(e: CustomEvent): void {
-    this.taskData!.members = e.detail;
-    if (this.taskData?.members.length === 0) {
-      this.isMemberEditMode = false;
+    this._taskData!.members = e.detail;
+    if (this._taskData?.members.length === 0) {
+      this._isMemberEditMode = false;
     }
     this._updateTaskData();
   }
@@ -518,8 +495,8 @@ export class TiTaskData extends LitElement {
   private _handleClickCheckListEdit(e: CustomEvent): void {
     if (!e.detail) {
       // 編集モードを終了するフラグがfalseで飛んできたタイミングで、すべての ti-checkboxes から値を取り出して保存
-      if (this.tiCheckboxes && this.taskData) {
-        const allCheckboxesData = Array.from(this.tiCheckboxes)
+      if (this._tiCheckboxesElements && this._taskData) {
+        const checkboxEditorDataList = Array.from(this._tiCheckboxesElements)
           .map((c: any) => {
             return typeof c.getEditorData === "function"
               ? c.getEditorData()
@@ -527,11 +504,11 @@ export class TiTaskData extends LitElement {
           })
           .filter((data) => data !== null) as any[];
 
-        this.taskData.checklist = allCheckboxesData;
+        this._taskData.checklist = checkboxEditorDataList;
         this._updateTaskData();
       }
     }
-    this.isCheckBoxEditMode = e.detail;
+    this._isCheckBoxEditMode = e.detail;
   }
 
   /**
@@ -545,16 +522,16 @@ export class TiTaskData extends LitElement {
    * @memberof TiInputLabel
    */
   private _addChecklist(): void {
-    if (!this.taskData) {
+    if (!this._taskData) {
       return;
     }
 
     // checklist が未定義の場合は空配列で初期化
-    if (this.taskData && !this.taskData.checklist) {
-      this.taskData.checklist = [];
+    if (this._taskData && !this._taskData.checklist) {
+      this._taskData.checklist = [];
     }
 
-    this.taskData.checklist.push({
+    this._taskData.checklist.push({
       label: "",
       checkboxes: [],
     });
@@ -572,12 +549,12 @@ export class TiTaskData extends LitElement {
    * @returns {*}
    **/
   private _saveCheckBoxes(e: CustomEvent, index: number): void {
-    if (!this.taskData || !this.taskData.checklist) {
+    if (!this._taskData || !this._taskData.checklist) {
       return;
     }
 
     // イベントから受け取った label と checkboxes を該当のチェックリストに反映する
-    this.taskData.checklist[index].checkboxes = e.detail.checkboxes;
+    this._taskData.checklist[index].checkboxes = e.detail.checkboxes;
 
     this._updateTaskData();
   }
@@ -590,7 +567,7 @@ export class TiTaskData extends LitElement {
    * @returns {*}
    */
   private _handleClickEditUrl(): void {
-    this.isUrlEditMode = !this.isUrlEditMode;
+    this._isUrlEditMode = !this._isUrlEditMode;
   }
 
   /**
@@ -601,9 +578,9 @@ export class TiTaskData extends LitElement {
    * @return {*}
    */
   private _handleChangeUrl(e: CustomEvent): void {
-    this.taskData!.urls = e.detail;
-    if (this.taskData?.urls.length === 0) {
-      this.isUrlEditMode = false;
+    this._taskData!.urls = e.detail;
+    if (this._taskData?.urls.length === 0) {
+      this._isUrlEditMode = false;
     }
     this._updateTaskData();
   }
@@ -616,7 +593,7 @@ export class TiTaskData extends LitElement {
    * @returns {*}
    */
   private _handleClickEditFolder(): void {
-    this.isFolderEditMode = !this.isFolderEditMode;
+    this._isFolderEditMode = !this._isFolderEditMode;
   }
 
   /**
@@ -627,9 +604,9 @@ export class TiTaskData extends LitElement {
    * @return {*}
    */
   private _handleChangeFolder(e: CustomEvent): void {
-    this.taskData!.folders = e.detail;
-    if (this.taskData?.folders.length === 0) {
-      this.isFolderEditMode = false;
+    this._taskData!.folders = e.detail;
+    if (this._taskData?.folders.length === 0) {
+      this._isFolderEditMode = false;
     }
     this._updateTaskData();
   }
