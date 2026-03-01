@@ -202,17 +202,19 @@ export class TiTaskData extends LitElement {
             @sl-change=${this._handleChangeTitle}
           ></sl-input>
         </div>
-        <div class="button">
-          <!--ステータスボタン-->
-          <ti-status-button
-            .status=${this._taskData?.status}
-            @ti-change-status=${this._handleChangeStatus}
-          >
-          </ti-status-button>
+        <div class="label">
+          <ti-status-tag .status=${this._taskData?.status}></ti-status-tag>
         </div>
       </div>
-      <!--ｘｘｘ-->
-      <div class="control-area"></div>
+      <!--コントロール-->
+      <div class="control-area">
+        <!--ステータスボタン-->
+        <ti-status-button
+          .status=${this._taskData?.status}
+          @ti-change-status=${this._handleChangeStatus}
+        >
+        </ti-status-button>
+      </div>
       <div class="base main-area">
         <sl-tab-group>
           <sl-tab slot="nav" panel="summary">

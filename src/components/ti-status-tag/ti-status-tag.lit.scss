@@ -1,0 +1,28 @@
+.status-label {
+  width: 35px;
+  padding: var(--sl-spacing-small) var(--sl-spacing-x-small);
+  border-radius: 1.2rem;
+
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    margin-top: -2px;
+  }
+
+  color: #fffff0;
+  font-weight: bold;
+  font-size: var(--sl-font-size-small);
+
+  &.neutral {
+    background-color: var(--sl-color-neutral-600);
+  }
+  &.primary {
+    background-color: var(--sl-color-primary-600);
+  }
+  &.success {
+    background-color: var(--sl-color-success-600);
+  }
+}

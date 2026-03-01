@@ -169,7 +169,7 @@ export class TiStatusButton extends LitElement {
       case TASK_STATUS.DONE.code:
         return {
           variant: "neutral",
-          label: "済",
+          label: "-",
           icon: "slash-circle-fill",
         };
       default:
