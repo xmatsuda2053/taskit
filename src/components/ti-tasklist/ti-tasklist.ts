@@ -144,50 +144,50 @@ export class TiTaskList extends LitElement {
       <sl-tab-group>
         <sl-tab slot="nav" panel="pending">
           <sl-icon library="taskit" name="square"></sl-icon>
-          <span>未対応</span>
+          <span>未着手</span>
         </sl-tab>
         <sl-tab slot="nav" panel="progress">
           <sl-icon library="taskit" name="square-half"></sl-icon>
-          <span>対応中</span>
+          <span>実行中</span>
         </sl-tab>
         <sl-tab slot="nav" panel="done">
           <sl-icon library="taskit" name="check-square"></sl-icon>
-          <span>対応済</span>
+          <span>完了</span>
         </sl-tab>
 
         <sl-tab-panel name="pending">
           <div class="task-list scrollable">
             ${repeat(
-      this._pendingTasks,
-      (task) => task.id,
-      (task) => html`
+              this._pendingTasks,
+              (task) => task.id,
+              (task) => html`
                 <ti-taskitem .taskId=${task.id} .dueDate=${task.dueDate}>
                   ${task.title}
                 </ti-taskitem>
               `,
-    )}
+            )}
           </div>
         </sl-tab-panel>
         <sl-tab-panel name="progress">
           <div class="task-list scrollable">
             ${repeat(
-      this._progressTasks,
-      (task) => task.id,
-      (task) => html`
+              this._progressTasks,
+              (task) => task.id,
+              (task) => html`
                 <ti-taskitem .task=${task}>${task.title}</ti-taskitem>
               `,
-    )}
+            )}
           </div>
         </sl-tab-panel>
         <sl-tab-panel name="done">
           <div class="task-list scrollable">
             ${repeat(
-      this._doneTasks,
-      (task) => task.id,
-      (task) => html`
+              this._doneTasks,
+              (task) => task.id,
+              (task) => html`
                 <ti-taskitem .task=${task}>${task.title}</ti-taskitem>
               `,
-    )}
+            )}
           </div>
         </sl-tab-panel>
       </sl-tab-group>
