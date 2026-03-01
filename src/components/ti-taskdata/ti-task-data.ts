@@ -187,6 +187,29 @@ export class TiTaskData extends LitElement {
       return html``;
     }
     return html`<div class="container">
+      <!--タイトル-->
+      <div class="header-area">
+        <div class="title">
+          <sl-input
+            id="title"
+            class="title-item"
+            placeholder="title..."
+            size="large"
+            value=${this._taskData?.title}
+            @sl-change=${this._handleChangeTitle}
+          ></sl-input>
+          <sl-button size="medium" variant="primary" class="title-item">
+            <sl-icon
+              library="taskit"
+              name="play-circle-fill"
+              slot="prefix"
+            ></sl-icon>
+            開始
+          </sl-button>
+        </div>
+      </div>
+      <!--コントロールボタン-->
+      <div class="control-area"></div>
       <div class="base main-area">
         <sl-tab-group>
           <sl-tab slot="nav" panel="summary">
@@ -204,25 +227,6 @@ export class TiTaskData extends LitElement {
 
           <sl-tab-panel name="summary">
             <div class="panel-contents scrollable">
-              <!--タイトル,コントロールボタン-->
-              <div class="input-item title">
-                <sl-input
-                  id="title"
-                  class="title-item"
-                  placeholder="title..."
-                  size="small"
-                  value=${this._taskData?.title}
-                  @sl-change=${this._handleChangeTitle}
-                ></sl-input>
-                <sl-button size="small" variant="primary" class="title-item">
-                  <sl-icon
-                    library="taskit"
-                    name="play-circle-fill"
-                    slot="prefix"
-                  ></sl-icon>
-                  開始
-                </sl-button>
-              </div>
               <!--期限日-->
               <div class="input-item">
                 <ti-input-label
@@ -289,14 +293,14 @@ export class TiTaskData extends LitElement {
                 ></ti-input-label>
                 <div class="contents">
                   ${this._taskData?.checklist.map((c, index) => {
-      return html`<ti-checkboxes
+                    return html`<ti-checkboxes
                       .label=${c.label}
                       .checkboxes=${c.checkboxes}
                       .isEditMode=${this._isCheckBoxEditMode}
                       @ti-change-checkboxes=${(e: CustomEvent) =>
-          this._saveCheckBoxes(e, index)}
+                        this._saveCheckBoxes(e, index)}
                     ></ti-checkboxes>`;
-    })}
+                  })}
                 </div>
               </div>
             </div>
