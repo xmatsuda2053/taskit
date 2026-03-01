@@ -162,11 +162,13 @@ export class TiTaskData extends LitElement {
    * @param {PropertyValues} _changedProperties
    * @memberof TiTaskData
    */
-  protected async willUpdate(_changedProperties: PropertyValues) {
+  protected willUpdate(_changedProperties: PropertyValues) {
     super.willUpdate(_changedProperties);
     if (_changedProperties.has("taskId")) {
       if (this.taskId !== undefined) {
-        this._taskData = await db.getTaskById(this.taskId);
+        db.getTaskById(this.taskId).then((task) => {
+          this._taskData = task;
+        });
       } else {
         this._taskData = undefined;
       }
@@ -187,8 +189,9 @@ export class TiTaskData extends LitElement {
       return html``;
     }
     return html`<div class="container">
-      <!--タイトル-->
+      <!--ヘッダー-->
       <div class="header-area">
+        <!--タイトル-->
         <div class="title">
           <sl-input
             id="title"
@@ -198,17 +201,17 @@ export class TiTaskData extends LitElement {
             value=${this._taskData?.title}
             @sl-change=${this._handleChangeTitle}
           ></sl-input>
-          <sl-button size="medium" variant="primary" class="title-item">
-            <sl-icon
-              library="taskit"
-              name="play-circle-fill"
-              slot="prefix"
-            ></sl-icon>
-            開始
-          </sl-button>
+        </div>
+        <div class="button">
+          <!--ステータスボタン-->
+          <ti-status-button
+            .status=${this._taskData?.status}
+            @ti-change-status=${this._handleChangeStatus}
+          >
+          </ti-status-button>
         </div>
       </div>
-      <!--コントロールボタン-->
+      <!--ｘｘｘ-->
       <div class="control-area"></div>
       <div class="base main-area">
         <sl-tab-group>
@@ -248,8 +251,8 @@ export class TiTaskData extends LitElement {
                 <ti-input-label
                   .label=${"関係者"}
                   .icon=${"people"}
-                  .editable=${true}
-                  .addable=${true}
+                  .isEditable=${true}
+                  .isAddable=${true}
                   @ti-edit=${this._handleClickEditMember}
                   @ti-add=${this._addMember}
                 ></ti-input-label>
@@ -286,8 +289,8 @@ export class TiTaskData extends LitElement {
                 <ti-input-label
                   .label=${"リスト一覧"}
                   .icon=${"ui-checks-grid"}
-                  .editable=${true}
-                  .addable=${true}
+                  .isEditable=${true}
+                  .isAddable=${true}
                   @ti-edit=${this._handleClickCheckListEdit}
                   @ti-add=${this._addChecklist}
                 ></ti-input-label>
@@ -376,6 +379,14 @@ export class TiTaskData extends LitElement {
     </div>`;
   }
 
+  private _handleChangeStatus(e: CustomEvent): void {
+    if (!this._taskData) {
+      return;
+    }
+    this._taskData = { ...this._taskData, status: e.detail };
+    this._updateTaskData();
+  }
+
   /**
    * タイトルの変更入力を検知しDBを更新する。
    *
@@ -386,7 +397,7 @@ export class TiTaskData extends LitElement {
     if (!this._taskData) {
       return;
     }
-    this._taskData.title = this._titleInput.value;
+    this._taskData = { ...this._taskData, title: this._titleInput.value };
     this._updateTaskData();
   }
 
@@ -397,16 +408,12 @@ export class TiTaskData extends LitElement {
    * @returns {*}
    */
   private _handleChangeDueDate(): void {
-    if (!this._taskData) {
-      return;
-    }
+    if (!this._taskData || !this._dueDateInput.value) return;
 
-    const dueDateValue = this._dueDateInput.value;
-    if (!dueDateValue) {
-      return;
-    }
-
-    this._taskData.dueDate = new Date(dueDateValue);
+    this._taskData = {
+      ...this._taskData,
+      dueDate: new Date(this._dueDateInput.value),
+    };
     this._updateTaskData();
   }
 
@@ -418,10 +425,12 @@ export class TiTaskData extends LitElement {
    * @memberof TiTaskData
    * */
   private _handleChangeDescription(): void {
-    if (!this._taskData) {
-      return;
-    }
-    this._taskData.description = this._descriptionTextarea.value;
+    if (!this._taskData) return;
+
+    this._taskData = {
+      ...this._taskData,
+      description: this._descriptionTextarea.value,
+    };
     this._updateTaskData();
   }
 
@@ -433,11 +442,13 @@ export class TiTaskData extends LitElement {
    * @memberof TiTaskData
    */
   private async _updateTaskData(): Promise<void> {
-    if (!this._taskData) {
-      return;
+    if (!this._taskData) return;
+
+    try {
+      await db.updateTask(this._taskData);
+    } catch (error) {
+      console.error("Failed to update task:", error);
     }
-    db.updateTask(this._taskData);
-    this._taskData = await db.getTaskById(this._taskData.id!);
   }
 
   /**
@@ -457,19 +468,13 @@ export class TiTaskData extends LitElement {
    * @memberof TiTaskData
    */
   private _addMember(): void {
-    if (!this._taskData) {
-      return;
-    }
+    if (!this._taskData) return;
 
-    if (this._taskData && !this._taskData.members) {
-      this._taskData.members = [];
-    }
-
-    this._taskData.members.push({
-      div: "",
-      name: "",
-      tel: "",
-    });
+    const currentMembers = this._taskData.members || [];
+    this._taskData = {
+      ...this._taskData,
+      members: [...currentMembers, { div: "", name: "", tel: "" }], // 新しい配列を作成
+    };
     this._updateTaskData();
   }
 
@@ -480,8 +485,11 @@ export class TiTaskData extends LitElement {
    * @memberof TiTaskData
    */
   private _handleChangeMembers(e: CustomEvent): void {
-    this._taskData!.members = e.detail;
-    if (this._taskData?.members.length === 0) {
+    if (!this._taskData) return;
+
+    this._taskData = { ...this._taskData, members: e.detail };
+
+    if (this._taskData.members.length === 0) {
       this._isMemberEditMode = false;
     }
     this._updateTaskData();
@@ -526,20 +534,13 @@ export class TiTaskData extends LitElement {
    * @memberof TiInputLabel
    */
   private _addChecklist(): void {
-    if (!this._taskData) {
-      return;
-    }
+    if (!this._taskData) return;
 
-    // checklist が未定義の場合は空配列で初期化
-    if (this._taskData && !this._taskData.checklist) {
-      this._taskData.checklist = [];
-    }
-
-    this._taskData.checklist.push({
-      label: "",
-      checkboxes: [],
-    });
-
+    const currentChecklist = this._taskData.checklist || [];
+    this._taskData = {
+      ...this._taskData,
+      checklist: [...currentChecklist, { label: "", checkboxes: [] }],
+    };
     this._updateTaskData();
   }
 
@@ -553,13 +554,19 @@ export class TiTaskData extends LitElement {
    * @returns {*}
    **/
   private _saveCheckBoxes(e: CustomEvent, index: number): void {
-    if (!this._taskData || !this._taskData.checklist) {
-      return;
-    }
+    if (!this._taskData || !this._taskData.checklist) return;
 
-    // イベントから受け取った label と checkboxes を該当のチェックリストに反映する
-    this._taskData.checklist[index].checkboxes = e.detail.checkboxes;
+    // 1. 配列をコピー
+    const newChecklist = [...this._taskData.checklist];
 
+    // 2. 該当するインデックスのオブジェクトも新しく作り直す
+    newChecklist[index] = {
+      ...newChecklist[index],
+      checkboxes: e.detail.checkboxes,
+    };
+
+    // 3. 親オブジェクトにセット
+    this._taskData = { ...this._taskData, checklist: newChecklist };
     this._updateTaskData();
   }
 
@@ -582,10 +589,19 @@ export class TiTaskData extends LitElement {
    * @return {*}
    */
   private _handleChangeUrl(e: CustomEvent): void {
-    this._taskData!.urls = e.detail;
-    if (this._taskData?.urls.length === 0) {
+    if (!this._taskData) return;
+
+    // 新しいオブジェクトを作成し、urlsプロパティのみe.detailで上書き
+    this._taskData = {
+      ...this._taskData,
+      urls: e.detail,
+    };
+
+    // リンクが空になったら編集モードをオフにする
+    if (this._taskData.urls.length === 0) {
       this._isUrlEditMode = false;
     }
+
     this._updateTaskData();
   }
 
@@ -608,10 +624,19 @@ export class TiTaskData extends LitElement {
    * @return {*}
    */
   private _handleChangeFolder(e: CustomEvent): void {
-    this._taskData!.folders = e.detail;
-    if (this._taskData?.folders.length === 0) {
+    if (!this._taskData) return;
+
+    // 新しいオブジェクトを作成し、foldersプロパティのみ上書き
+    this._taskData = {
+      ...this._taskData,
+      folders: e.detail,
+    };
+
+    // フォルダが空になったら編集モードをオフにする
+    if (this._taskData.folders.length === 0) {
       this._isFolderEditMode = false;
     }
+
     this._updateTaskData();
   }
 }
