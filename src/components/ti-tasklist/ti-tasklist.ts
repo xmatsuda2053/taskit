@@ -7,7 +7,7 @@ import {
   HTMLTemplateResult,
 } from "lit";
 import { repeat } from "lit/directives/repeat.js";
-import { customElement, state, query } from "lit/decorators.js";
+import { customElement, state, property, query } from "lit/decorators.js";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import { db } from "@/service/TaskItDB";
 import { TASK_STATUS, type Task } from "@/models/Task";
@@ -36,6 +36,22 @@ export class TiTaskList extends LitElement {
       ${unsafeCSS(styles)}
     `,
   ];
+
+  /**
+   * 選択中タスクのID
+   *
+   * @type {number}
+   * @memberof TiTaskList
+   */
+  @property({ type: Number }) selectedTaskId?: number;
+
+  /**
+   * 選択中のタブのID
+   *
+   * @type {number}
+   * @memberof TiTaskList
+   */
+  @property({ type: Number }) selectedTabId?: string;
 
   /**
    * タスク名入力ダイアログ
@@ -131,6 +147,24 @@ export class TiTaskList extends LitElement {
   }
 
   /**
+   * render完了後に実行されます。
+   *
+   * @protected
+   * @param {PropertyValues} _changedProperties
+   * @memberof TaskitApp
+   */
+  updated(_changedProperties: PropertyValues) {
+    if (
+      _changedProperties.has("selectedTabId") &&
+      this.selectedTabId !== undefined
+    ) {
+      requestAnimationFrame(() => {
+        this.selectedTabId = undefined;
+      });
+    }
+  }
+
+  /**
    * コンポーネントのメインレイアウトをレンダリングします。
    * アプリケーションの基本構造を定義します。
    *
@@ -142,15 +176,15 @@ export class TiTaskList extends LitElement {
   protected render(): HTMLTemplateResult {
     return html` <div id="root">
       <sl-tab-group>
-        <sl-tab slot="nav" panel="pending">
+        <sl-tab slot="nav" panel="pending" ?active=${this._isActive(TASK_STATUS.PENDING.code)}>
           <sl-icon library="taskit" name="square"></sl-icon>
           <span>未着手</span>
         </sl-tab>
-        <sl-tab slot="nav" panel="progress">
+        <sl-tab slot="nav" panel="progress" ?active=${this._isActive(TASK_STATUS.PROGRESS.code)}>
           <sl-icon library="taskit" name="square-half"></sl-icon>
           <span>実行中</span>
         </sl-tab>
-        <sl-tab slot="nav" panel="done">
+        <sl-tab slot="nav" panel="done" ?active=${this._isActive(TASK_STATUS.DONE.code)}>
           <sl-icon library="taskit" name="check-square"></sl-icon>
           <span>完了</span>
         </sl-tab>
@@ -161,7 +195,11 @@ export class TiTaskList extends LitElement {
               this._pendingTasks,
               (task) => task.id,
               (task) => html`
-                <ti-taskitem .taskId=${task.id} .dueDate=${task.dueDate}>
+                <ti-taskitem
+                  .taskId=${task.id}
+                  .dueDate=${task.dueDate}
+                  .isSelected=${task.id === this.selectedTaskId}
+                >
                   ${task.title}
                 </ti-taskitem>
               `,
@@ -174,7 +212,13 @@ export class TiTaskList extends LitElement {
               this._progressTasks,
               (task) => task.id,
               (task) => html`
-                <ti-taskitem .task=${task}>${task.title}</ti-taskitem>
+                <ti-taskitem
+                  .taskId=${task.id}
+                  .dueDate=${task.dueDate}
+                  .isSelected=${task.id === this.selectedTaskId}
+                >
+                  ${task.title}
+                </ti-taskitem>
               `,
             )}
           </div>
@@ -185,7 +229,13 @@ export class TiTaskList extends LitElement {
               this._doneTasks,
               (task) => task.id,
               (task) => html`
-                <ti-taskitem .task=${task}>${task.title}</ti-taskitem>
+                <ti-taskitem
+                  .taskId=${task.id}
+                  .dueDate=${task.dueDate}
+                  .isSelected=${task.id === this.selectedTaskId}
+                >
+                  ${task.title}
+                </ti-taskitem>
               `,
             )}
           </div>
@@ -221,6 +271,16 @@ export class TiTaskList extends LitElement {
         </sl-dialog>
       </div>
     </div>`;
+  }
+
+  /**
+   * タブがアクティベート対象であるかチェックします。
+   *
+   * @param code
+   * @returns
+   */
+  private _isActive(code: string): boolean {
+    return code === this.selectedTabId;
   }
 
   /**

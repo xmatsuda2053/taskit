@@ -45,6 +45,14 @@ export class TiTaskItem extends LitElement {
   @property({ type: Date }) dueDate?: Date;
 
   /**
+   * 選択中であるかを示す
+   *
+   * @type {boolean}
+   * @memberof TiTaskItem
+   */
+  @property({ type: Boolean }) isSelected: boolean = false;
+
+  /**
    * ツールチップに表示するタスク名
    *
    * @type {string}
@@ -124,7 +132,7 @@ export class TiTaskItem extends LitElement {
       overdue: isOverdue,
     };
 
-    return html`<div id="root">
+    return html`<div id="root" class="${this.isSelected ? "selected" : ""}">
       <sl-tooltip placement="right">
         <div class="${classMap(classes)}">
           <sl-icon

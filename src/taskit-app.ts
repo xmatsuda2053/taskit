@@ -39,6 +39,14 @@ export class TaskitApp extends LitElement {
   @state() selectedTaskId?: number = undefined;
 
   /**
+   * 選択中のタブID
+   *
+   * @type {number}
+   * @memberof TaskitApp
+   */
+  @state() selectedTabId?: string = undefined;
+
+  /**
    * Creates an instance of TaskitApp.
    * @memberof TaskitApp
    */
@@ -88,6 +96,24 @@ export class TaskitApp extends LitElement {
   }
 
   /**
+   * render完了後に実行されます。
+   *
+   * @protected
+   * @param {PropertyValues} _changedProperties
+   * @memberof TaskitApp
+   */
+  updated(_changedProperties: PropertyValues) {
+    if (
+      _changedProperties.has("selectedTabId") &&
+      this.selectedTabId !== undefined
+    ) {
+      requestAnimationFrame(() => {
+        this.selectedTabId = undefined;
+      });
+    }
+  }
+
+  /**
    * コンポーネントのメインレイアウトをレンダリングします。
    * アプリケーションの基本構造を定義します。
    *
@@ -101,11 +127,17 @@ export class TaskitApp extends LitElement {
       <div class="header-area"></div>
       <div class="menu-area">
         <ti-tasklist
+          .selectedTaskId=${this.selectedTaskId}
+          .selectedTabId=${this.selectedTabId}
           @ti-taskitem-click=${this._handleTiClickTaskItem}
         ></ti-tasklist>
       </div>
       <div class="contents1-area">
-        <ti-task-data .taskId=${this.selectedTaskId}></ti-task-data>
+        <ti-task-data
+          .taskId=${this.selectedTaskId}
+          @ti-change-status=${this._handleChangeStatus}
+        >
+        </ti-task-data>
       </div>
       <div class="footer-area"></div>
     </div>`;
@@ -120,5 +152,16 @@ export class TaskitApp extends LitElement {
    */
   private _handleTiClickTaskItem(e: CustomEvent) {
     this.selectedTaskId = e.detail.taskId;
+  }
+
+  /**
+   * タスク画面で選択したステータス（タブ）を選択状態とする。
+   *
+   * @private
+   * @param {CustomEvent} e
+   * @memberof TaskitApp
+   */
+  private _handleChangeStatus(e: CustomEvent) {
+    this.selectedTabId = e.detail;
   }
 }
