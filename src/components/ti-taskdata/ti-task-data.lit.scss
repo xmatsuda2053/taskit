@@ -16,16 +16,13 @@
 
   .header-area {
     grid-area: header-area;
+    display: grid;
+    grid-template-columns: 1fr 180px;
 
     .title {
       padding: 0 var(--sl-spacing-3x-small);
-      display: flex;
-      flex-direction: row;
-      align-items: flex-end;
-      gap: 5px;
 
       sl-input {
-        flex: 1 1 auto;
         width: 100%;
 
         &::part(base) {
@@ -37,16 +34,16 @@
           padding: var(--sl-spacing-2x-small);
           margin-top: 5px;
           height: 45px;
-          font-size: var(--sl-font-size-2x-large);
+          font-size: var(--sl-font-size-large);
           font-weight: bold;
         }
       }
+    }
 
-      sl-button {
-        flex: 0 0 90px;
-
-        width: 90px;
-      }
+    .button {
+      display: flex;
+      align-items: flex-end;
+      justify-content: right;
     }
   }
 

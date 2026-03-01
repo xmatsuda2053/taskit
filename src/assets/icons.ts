@@ -1,9 +1,11 @@
+import arrowClockwise from "@assets/icons/arrow-clockwise.svg?raw";
 import building from "@assets/icons/building.svg?raw";
 import checkLg from "@assets/icons/check-lg.svg?raw";
 import check_square from "@assets/icons/check-square.svg?raw";
 import calendar from "@assets/icons/calendar.svg?raw";
 import cardText from "@assets/icons/card-text.svg?raw";
 import chatLeftText from "@assets/icons/chat-left-text.svg?raw";
+import checkCircleFill from "@assets/icons/check-circle-fill.svg?raw";
 import chevronBarExpand from "@assets/icons/chevron-bar-expand.svg?raw";
 import chevronBarContract from "@assets/icons/chevron-bar-contract.svg?raw";
 import copy from "@assets/icons/copy.svg?raw";
@@ -21,15 +23,18 @@ import plus_lg from "@assets/icons/plus-lg.svg?raw";
 import plusSquare from "@assets/icons/plus-square.svg?raw";
 import square from "@assets/icons/square.svg?raw";
 import square_half from "@assets/icons/square-half.svg?raw";
+import slashCircleFill from "@assets/icons/slash-circle-fill.svg?raw";
 import telephone from "@assets/icons/telephone.svg?raw";
 import trash3 from "@assets/icons/trash3.svg?raw";
 import uiChecksGrid from "@assets/icons/ui-checks-grid.svg?raw";
 import chevron_right from "@assets/icons/chevron-right.svg?raw";
 
 export const icons: Record<string, string> = {
+  "arrow-clockwise": arrowClockwise,
   building: building,
   "check-lg": checkLg,
   "check-square": check_square,
+  "check-circle-fill": checkCircleFill,
   "chevron-bar-expand": chevronBarExpand,
   "chevron-bar-contract": chevronBarContract,
   calendar: calendar,
@@ -50,6 +55,7 @@ export const icons: Record<string, string> = {
   "plus-square": plusSquare,
   square: square,
   "square-half": square_half,
+  "slash-circle-fill": slashCircleFill,
   telephone: telephone,
   trash3: trash3,
   "ui-checks-grid": uiChecksGrid,
