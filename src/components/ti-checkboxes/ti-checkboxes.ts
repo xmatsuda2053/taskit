@@ -35,7 +35,7 @@ export class TiCheckboxes extends LitElement {
    * @type {SlInput}
    * @memberof TiCheckboxes
    */
-  @query("#checkboxes-label") private checkboxesLabel!: SlInput;
+  @query("#checkboxes-label") private _checkboxesLabelInput!: SlInput;
 
   /**
    * チェックボックスの編集欄
@@ -44,7 +44,7 @@ export class TiCheckboxes extends LitElement {
    * @type {SlTextarea}
    * @memberof TiCheckboxes
    */
-  @query("#checkboxes-textarea") private textarea!: SlTextarea;
+  @query("#checkboxes-textarea") private _checkboxesTextarea!: SlTextarea;
 
   /**
    * チェックボックスのラベル名
@@ -76,7 +76,7 @@ export class TiCheckboxes extends LitElement {
    * @type {CB[]}
    * @memberof TiCheckboxes
    */
-  private updateCheckboxes: CB[] = [];
+  private _updatedCheckboxes: CB[] = [];
 
   /**
    * Creates an instance of TiCheckboxes.
@@ -116,8 +116,8 @@ export class TiCheckboxes extends LitElement {
   protected willUpdate(_changedProperties: PropertyValues) {
     super.willUpdate(_changedProperties);
     if (_changedProperties.get("isEditMode") === true && !this.isEditMode) {
-      if (this.textarea) {
-        this._handleSaveFromTextarea();
+      if (this._checkboxesTextarea) {
+        this._saveFromTextarea();
       }
     }
   }
@@ -126,10 +126,10 @@ export class TiCheckboxes extends LitElement {
    * Textareaの値を解析して配列として返す
    * @returns {CB[]}
    */
-  public getParsedCheckboxes(): CB[] {
-    if (!this.textarea) return this.checkboxes;
+  private _parseCheckboxes(): CB[] {
+    if (!this._checkboxesTextarea) return this.checkboxes;
 
-    const rawValue = this.textarea.value;
+    const rawValue = this._checkboxesTextarea.value;
 
     return rawValue
       .split("\n")
@@ -151,9 +151,9 @@ export class TiCheckboxes extends LitElement {
    */
   public getEditorData() {
     return {
-      label: this.checkboxesLabel ? this.checkboxesLabel.value : this.label,
+      label: this._checkboxesLabelInput ? this._checkboxesLabelInput.value : this.label,
       checkboxes: this.isEditMode
-        ? this.getParsedCheckboxes()
+        ? this._parseCheckboxes()
         : this.checkboxes,
     };
   }
@@ -161,14 +161,14 @@ export class TiCheckboxes extends LitElement {
   /**
    * Textareaの値を解析して checkboxes プロパティを更新する
    */
-  private _handleSaveFromTextarea() {
-    this.updateCheckboxes = this.getParsedCheckboxes();
+  private _saveFromTextarea() {
+    this._updatedCheckboxes = this._parseCheckboxes();
 
     // 結果をコンソール出力
     emit(this, "ti-change-checkboxes", {
       detail: {
-        label: this.checkboxesLabel ? this.checkboxesLabel.value : this.label,
-        checkboxes: this.updateCheckboxes,
+        label: this._checkboxesLabelInput ? this._checkboxesLabelInput.value : this.label,
+        checkboxes: this._updatedCheckboxes,
       },
     });
   }
@@ -177,8 +177,8 @@ export class TiCheckboxes extends LitElement {
    * チェックボックスの更新内容を取得する。
    * @returns
    */
-  public getUpdateCheckboxes(): CB[] {
-    return this.updateCheckboxes;
+  public getUpdatedCheckboxes(): CB[] {
+    return this._updatedCheckboxes;
   }
 
   /**
@@ -213,17 +213,17 @@ export class TiCheckboxes extends LitElement {
         <div class="checkbox-label">${this.label}</div>
         <div class="checkbox-area">
           ${this.checkboxes.map((cb, index) => {
-            return html`<div class="checkbox-line">
+        return html`<div class="checkbox-line">
               <sl-checkbox
                 size="small"
                 ?checked=${cb.isChecked}
                 class=${cb.isChecked ? "checked" : ""}
-                @sl-change=${(e: Event) => this._handleChangeChecked(e, index)}
+                @sl-change=${(e: Event) => this._handleChangeCheckbox(e, index)}
               >
                 ${cb.label}
               </sl-checkbox>
             </div>`;
-          })}
+      })}
         </div>
       </div>`;
     } else {
@@ -264,17 +264,17 @@ export class TiCheckboxes extends LitElement {
       return;
     }
 
-    if (!this.textarea) {
+    if (!this._checkboxesTextarea) {
       return;
     }
 
     // Shoelace(sl-textarea) 内部のネイティブな textarea 要素にアクセス
-    const nativeTextarea = this.textarea.input as HTMLTextAreaElement;
+    const nativeTextarea = this._checkboxesTextarea.input as HTMLTextAreaElement;
 
     // 現在の選択範囲（カーソル位置）とテキスト全体を取得
     const start = nativeTextarea.selectionStart;
     const end = nativeTextarea.selectionEnd;
-    const value = this.textarea.value;
+    const value = this._checkboxesTextarea.value;
 
     // 文頭からカーソル位置までのテキストを切り出し、現在の行の内容を特定
     const textBeforeCursor = value.substring(0, start);
@@ -282,33 +282,33 @@ export class TiCheckboxes extends LitElement {
 
     // チェックボックス構文（- [ ] または - [x]）にマッチするか確認
     // ^\s* : 行頭の空白を許容 / [ xX] : 未チェックまたはチェック済みの両方に対応
-    const checkboxRegex = /^\s*- \[[ xX]\]/;
-    const match = currentLine.match(checkboxRegex);
+    const CHECKBOX_REGEX = /^\s*- \[[ xX]\]/;
+    const match = currentLine.match(CHECKBOX_REGEX);
 
     if (match) {
       // 標準の改行処理を抑制
       e.preventDefault();
 
       // 新しい行に挿入する文字列（常に未チェック状態のボックスを生成）
-      const insertText = "\n- [ ] ";
+      const INSERT_TEXT = "\n- [ ] ";
 
       // カーソル位置を起点に、前後の文字列と新しいボックス構文を結合
       const newValue =
-        value.substring(0, start) + insertText + value.substring(end);
+        value.substring(0, start) + INSERT_TEXT + value.substring(end);
 
       // コンポーネントに新しい値を反映
-      this.textarea.value = newValue;
+      this._checkboxesTextarea.value = newValue;
 
       // Shoelace のレンダリング更新が完了するのを待機
       // これを待つことで、以降の setSelectionRange が正しく動作する
-      await this.textarea.updateComplete;
+      await this._checkboxesTextarea.updateComplete;
 
       // カーソルを新しく挿入された行の末尾へ移動
-      const newPos = start + insertText.length;
+      const newPos = start + INSERT_TEXT.length;
       nativeTextarea.setSelectionRange(newPos, newPos);
 
       // 入力を継続できるようフォーカスを当てる
-      this.textarea.focus();
+      this._checkboxesTextarea.focus();
     }
   }
 
@@ -318,13 +318,13 @@ export class TiCheckboxes extends LitElement {
    * @param e
    * @param index
    */
-  private _handleChangeChecked(e: Event, index: number) {
+  private _handleChangeCheckbox(e: Event, index: number) {
     const target = e.target as HTMLInputElement;
-    const updateCheckboxes = [...this.checkboxes];
-    updateCheckboxes[index].isChecked = target.checked;
+    const clonedCheckboxes = [...this.checkboxes];
+    clonedCheckboxes[index].isChecked = target.checked;
     emit(this, "ti-change-checkboxes", {
       detail: {
-        checkboxes: updateCheckboxes,
+        checkboxes: clonedCheckboxes,
       },
     });
   }

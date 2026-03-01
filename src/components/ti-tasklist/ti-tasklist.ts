@@ -7,7 +7,7 @@ import {
   HTMLTemplateResult,
 } from "lit";
 import { repeat } from "lit/directives/repeat.js";
-import { customElement, state, property, query } from "lit/decorators.js";
+import { customElement, state, query } from "lit/decorators.js";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 import { db } from "@/service/TaskItDB";
 import { TASK_STATUS, type Task } from "@/models/Task";
@@ -43,7 +43,7 @@ export class TiTaskList extends LitElement {
    * @type {SlDialog}
    * @memberof TiTaskList
    */
-  @query("#add-task-dialog") addTaskDialog!: SlDialog;
+  @query("#add-task-dialog") private _addTaskDialog!: SlDialog;
 
   /**
    * タスク名入力欄
@@ -51,7 +51,7 @@ export class TiTaskList extends LitElement {
    * @type {SlInput}
    * @memberof TiTaskList
    */
-  @query("#new-task-title") newTaskTitleInput!: SlInput;
+  @query("#new-task-title") private _newTaskTitleInput!: SlInput;
 
   /**
    * 未実行のタスク一覧
@@ -158,36 +158,36 @@ export class TiTaskList extends LitElement {
         <sl-tab-panel name="pending">
           <div class="task-list scrollable">
             ${repeat(
-              this._pendingTasks,
-              (task) => task.id,
-              (task) => html`
+      this._pendingTasks,
+      (task) => task.id,
+      (task) => html`
                 <ti-taskitem .taskId=${task.id} .dueDate=${task.dueDate}>
                   ${task.title}
                 </ti-taskitem>
               `,
-            )}
+    )}
           </div>
         </sl-tab-panel>
         <sl-tab-panel name="progress">
           <div class="task-list scrollable">
             ${repeat(
-              this._progressTasks,
-              (task) => task.id,
-              (task) => html`
+      this._progressTasks,
+      (task) => task.id,
+      (task) => html`
                 <ti-taskitem .task=${task}>${task.title}</ti-taskitem>
               `,
-            )}
+    )}
           </div>
         </sl-tab-panel>
         <sl-tab-panel name="done">
           <div class="task-list scrollable">
             ${repeat(
-              this._doneTasks,
-              (task) => task.id,
-              (task) => html`
+      this._doneTasks,
+      (task) => task.id,
+      (task) => html`
                 <ti-taskitem .task=${task}>${task.title}</ti-taskitem>
               `,
-            )}
+    )}
           </div>
         </sl-tab-panel>
       </sl-tab-group>
@@ -196,7 +196,7 @@ export class TiTaskList extends LitElement {
           <sl-button
             variant="primary"
             id="add-task-button"
-            @click=${() => this.addTaskDialog.show()}
+            @click=${() => this._addTaskDialog.show()}
           >
             <sl-icon library="taskit" name="plus-lg"></sl-icon>
           </sl-button>
@@ -215,7 +215,7 @@ export class TiTaskList extends LitElement {
               >
             </sl-input>
           </div>
-          <sl-button slot="footer" variant="primary" id="save-task-button" @click=${this._addTask}>
+          <sl-button slot="footer" variant="primary" id="save-task-button" @click=${this._handleAddTask}>
             <sl-icon library="taskit" name="floppy"></sl-icon>
           </sl-button>
         </sl-dialog>
@@ -230,7 +230,7 @@ export class TiTaskList extends LitElement {
    * @returns {void}
    */
   private _handleRequestClose(): void {
-    this.newTaskTitleInput.value = "";
+    this._newTaskTitleInput.value = "";
     (document.activeElement as HTMLElement)?.blur();
   }
 
@@ -244,8 +244,8 @@ export class TiTaskList extends LitElement {
    * @returns {Promise<void>}
    * @memberof TiTaskItem
    */
-  private async _addTask(): Promise<void> {
-    const title = this.newTaskTitleInput.value?.trim();
+  private async _handleAddTask(): Promise<void> {
+    const title = this._newTaskTitleInput.value?.trim();
     if (!title) {
       return;
     }
@@ -253,7 +253,7 @@ export class TiTaskList extends LitElement {
     try {
       await db.addTask(title);
       this._handleRequestClose();
-      this.addTaskDialog.hide();
+      this._addTaskDialog.hide();
     } catch (error) {
       console.error("Failed Add Task:", error);
     }

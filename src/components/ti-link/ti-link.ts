@@ -43,7 +43,7 @@ export class TiLink extends LitElement {
    */
   @property({ type: Boolean }) isEditMode: boolean = false;
 
-  @query("#links-textarea") private textarea!: SlTextarea;
+  @query("#links-textarea") private _linksTextarea!: SlTextarea;
 
   /**
    * Creates an instance of TiLink.
@@ -83,7 +83,7 @@ export class TiLink extends LitElement {
   protected willUpdate(_changedProperties: PropertyValues) {
     super.willUpdate(_changedProperties);
     if (_changedProperties.get("isEditMode") === true && !this.isEditMode) {
-      if (this.textarea) {
+      if (this._linksTextarea) {
         this._handleSaveFromTextarea();
       }
     }
@@ -96,8 +96,8 @@ export class TiLink extends LitElement {
    * @memberof TiLink
    */
   private _handleSaveFromTextarea(): void {
-    const updateLinks: Link[] = this._parseMarkdownLinks(this.textarea.value);
-    emit(this, "ti-change-links", { detail: updateLinks });
+    const clonedLinks: Link[] = this._parseMarkdownLinks(this._linksTextarea.value);
+    emit(this, "ti-change-links", { detail: clonedLinks });
   }
 
   /**
@@ -109,8 +109,8 @@ export class TiLink extends LitElement {
    * @memberof TiLink
    */
   private _parseMarkdownLinks(text: string): Link[] {
-    const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
-    return [...text.matchAll(linkPattern)].map((match) => ({
+    const LINK_PATTERN = /\[([^\]]+)\]\(([^)]+)\)/g;
+    return [...text.matchAll(LINK_PATTERN)].map((match) => ({
       label: match[1],
       path: match[2],
     }));
@@ -137,15 +137,15 @@ export class TiLink extends LitElement {
     } else if (this.links?.length > 0) {
       return html` <div id="root">
         ${this.links.map(
-          (link) =>
-            html`<div
+        (link) =>
+          html`<div
               class="link-item"
               @click=${() => this._handleClickLink(link.path)}
             >
               <sl-icon library="taskit" name="copy"></sl-icon>
               <div class="link-label">${link.label}</div>
             </div>`,
-        )}
+      )}
       </div>`;
     } else {
       return html``;
