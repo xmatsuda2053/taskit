@@ -6,3 +6,4 @@ export * from "@/components/ti-checkboxes/ti-checkboxes";
 export * from "@/components/ti-link/ti-link";
 export * from "@/components/ti-input-label/ti-input-label";
 export * from "@/components/ti-status-button/ti-status-button";
+export * from "@/components/ti-status-tag/ti-status-tag";
